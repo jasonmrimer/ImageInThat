@@ -3,7 +3,6 @@ package main;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.geom.GeneralPath;
 
 import javax.swing.JFrame;
@@ -17,8 +16,6 @@ public class Main extends JPanel {
  * We can each branch off the master to start our code and push those
  * branches into the master when we want.
  */
-	static JPanel panel;
-	
 	public static void main(String arg[]){
 		JFrame frame = new JFrame();
 		frame.getContentPane().add(new Main());
