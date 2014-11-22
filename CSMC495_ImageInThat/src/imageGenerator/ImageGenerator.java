@@ -7,6 +7,7 @@ import java.awt.geom.GeneralPath;
 import java.awt.image.*;
 
 public class ImageGenerator extends Component {
+	//tester tester
 	BufferedImage image;
 	int height, width;
 	//constructors
