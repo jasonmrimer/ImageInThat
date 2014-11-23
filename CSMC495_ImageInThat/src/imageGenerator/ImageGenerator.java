@@ -1,3 +1,8 @@
+/*
+ * ImageGenerator creates images with a background color and
+ * randomly-sided, regular polygons of a different color.
+ */
+		
 package imageGenerator;
 
 import java.awt.Color;
