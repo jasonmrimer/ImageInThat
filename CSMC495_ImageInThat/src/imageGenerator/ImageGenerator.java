@@ -33,13 +33,21 @@ public class ImageGenerator {
 		shape = new IGShape(3, 3);
 	}
 	public ImageGenerator(int width, int height){
+		//set variables
 		this.width = width;
 		this.height = height;
+		//create image
 		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		igPanel = new IGPanel();
+		//colors
 		bgColor = getRandomColor(null);
 		colorBackground(bgColor);
+		//draw the shape into the image
 		shape = new IGShape(3, 20);
-		igPanel = new IGPanel();
+		Graphics2D g =  (Graphics2D) image.getGraphics();
+		g.setPaint(shape.getShapeColor());
+		g.draw(shape.getPolygon());
+		g.fill(shape.getPolygon());
 	}
 	@Override
 	public String toString(){
@@ -102,9 +110,9 @@ public class ImageGenerator {
 		public void paint(Graphics g){
 			Graphics2D g2D = (Graphics2D) g;
 			g.drawImage(getImage(), 0, 0, this);
-			g2D.setPaint(shape.getShapeColor());
-			g2D.fill(shape.getPolygon());
-			g2D.draw(shape.getPolygon());	
+//			g2D.setPaint(shape.getShapeColor());
+//			g2D.fill(shape.getPolygon());
+//			g2D.draw(shape.getPolygon());	
 		}
 	}
 
