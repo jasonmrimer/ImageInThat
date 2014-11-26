@@ -28,16 +28,8 @@ public class Main { //extends JPanel {
 		//Open memory load
 //		Driver driver = new Driver();
 		
-		ImageGenerator ig = new ImageGenerator(400, 400);
-//		JPanel panel = new JPanel();
-//		Graphics g = panel.getGraphics();
-//		Graphics2D  g2D = (Graphics2D) panel.getGraphics();
-//		panel.paint(g);
-//		g.drawImage(ig.getImage(), 0, 0, panel);
-//		g2D.setPaint(Color.black);
-//		g2D.fill(ig.getPolygon());
-//		g2D.draw(ig.getPolygon());
-//		
+		ImageGenerator ig = new ImageGenerator(300, 300);
+
 		//Jason's side
 		//frame
 		JFrame frame = new JFrame();
@@ -46,16 +38,4 @@ public class Main { //extends JPanel {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}
-	
-//	public void paint(Graphics g){
-//		Graphics2D g2D = (Graphics2D) g;
-//		ImageGenerator ig = new ImageGenerator(400, 400);
-//		GeneralPath polygon = new GeneralPath();
-//		g.drawImage(ig.getImage(), 0, 0, this);
-//		g2D.setPaint(Color.black);
-//		g2D.fill(ig.getPolygon());
-//		g2D.draw(ig.getPolygon());
-//	}
-	
-	
 }
