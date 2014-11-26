@@ -16,21 +16,14 @@ public class ImageRecognizer {
 	BufferedImage image;
 	JPanel panel;
 	Color bgColor, shapeColor, newBGColor;
-	boolean mark[][];
-	int maxStackSize = 500; // will be increased as needed
-	int[] xstack = new int[maxStackSize];
-	int[] ystack = new int[maxStackSize];
-	int stackSize;
-	int max;
-	boolean isFloat;
 	
 	public ImageRecognizer(BufferedImage image){
 		this.image = image;
 		bgColor = new Color(image.getRGB(0, 0)); //assume the top left pixel is the background since the shape never reaches the corner
-		mark = new boolean[image.getWidth()][image.getHeight()];
-		newBGColor = Color.black;
+		IRShape shape = new IRShape();
 //		flood(image, mark, 0, 0, bgColor, newBGColor);
 		FloodMap fm = new FloodMap(image);
+		System.out.println(fm.getSideNumber());
 		
 	}	
 	

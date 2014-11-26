@@ -43,7 +43,7 @@ public class ImageGenerator {
 		bgColor = getRandomColor(null);
 		colorBackground(bgColor);
 		//draw the shape into the image
-		shape = new IGShape(3, 20);
+		shape = new IGShape(3, 8);
 		Graphics2D g =  (Graphics2D) image.getGraphics();
 		g.setPaint(shape.getShapeColor());
 		g.draw(shape.getPolygon());
