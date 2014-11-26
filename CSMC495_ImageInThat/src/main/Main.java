@@ -10,17 +10,11 @@
  */
 
 package main;
-
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.geom.GeneralPath;
-
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 import john.*;
 import imageGenerator.ImageGenerator;
+import imageRecognizer.ImageRecognizer;
 
 public class Main { //extends JPanel {
 	public static void main(String arg[]){
@@ -29,7 +23,7 @@ public class Main { //extends JPanel {
 //		Driver driver = new Driver();
 		
 		ImageGenerator ig = new ImageGenerator(300, 300);
-
+		ImageRecognizer ir = new ImageRecognizer(ig.getImage());
 		//Jason's side
 		//frame
 		JFrame frame = new JFrame();
@@ -38,4 +32,5 @@ public class Main { //extends JPanel {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}
+	
 }
