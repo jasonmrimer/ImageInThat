@@ -11,8 +11,8 @@
  * 
  * Saves memory in readable format
  */
+package john;
 
-package phase1;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -64,7 +64,7 @@ public class AI {
 
 		private static final long serialVersionUID = 1L;
 			
-		IO(String AIguess, int imin, HashMap<Integer, String> hold){
+		IO(String AIguess, final int imin, HashMap<Integer, String> hold){
 			final JTextArea guess = new JTextArea(AIguess);
 			//tempEmpty is my reference for the GUI, change from JTextArea to the Image from the IR
 			final JTextArea tempEmpty = new JTextArea(Integer.toString(imin));
@@ -183,3 +183,4 @@ class noTextError extends Exception{
 		return this.errorMessage;
 	}
 }
+
