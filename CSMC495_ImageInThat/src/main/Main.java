@@ -1,25 +1,35 @@
+
+/*
+ * Image In That
+ * John Holl & Jason Rimer
+ * This program sorts through images that contain basic
+ * geometric shapes. As it maps those shapes, it receives input
+ * from users about those shapes and memorizes the input. It saves
+ * its knowledge and continues to learn more about shapes and recognize
+ * the shapes it knows. 
+ */
+
 package main;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.geom.GeneralPath;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import john.*;
 import imageGenerator.ImageGenerator;
 
 public class Main extends JPanel {
-/*
- * This is just the master for now, without any functionality.
- * We can each branch off the master to start our code and push those
- * branches into the master when we want.
- */
-	static JPanel panel;
-	
 	public static void main(String arg[]){
+		//John's side
+		//Open memory load
+		Driver driver = new Driver();
+		
+		//Jason's side
+		//frame
 		JFrame frame = new JFrame();
 		frame.getContentPane().add(new Main());
 		frame.setSize(400, 400);

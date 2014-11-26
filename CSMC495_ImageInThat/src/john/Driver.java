@@ -9,7 +9,7 @@
  * 
  * If old memory, reads and builds hashmap for logic center
  */
-package phase1;
+package john;
 
 import java.io.*;
 import java.util.*;
@@ -18,11 +18,11 @@ import java.awt.*;
 import java.awt.event.*;
 
 
-public class driver {
+public class Driver {
 		
-	public static void main(String[] args) {
+	public Driver() {
 		//Open memory load 
-		selecter resume = new selecter();
+		Selecter resume = new Selecter();
 		resume.pack();
 		resume.setTitle("Memory Select");
 		resume.setLocationRelativeTo(null);
@@ -32,11 +32,11 @@ public class driver {
 		
 	}
 	//new memory or load memory
-	static class selecter extends JFrame{
+	static class Selecter extends JFrame{
 
 		private static final long serialVersionUID = 1L;
 
-		selecter(){
+		Selecter(){
 			final JButton jbNew = new JButton("New Memory");
 			final JButton jbOpen = new JButton("Open Memory");
 			add(jbNew, BorderLayout.EAST);
