@@ -8,19 +8,24 @@ package imageGenerator;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.geom.GeneralPath;
 import java.awt.image.*;
 import java.util.Random;
+
+import javax.swing.JPanel;
 
 public class ImageGenerator {
 	BufferedImage image;
 	int height, width;
 	GeneralPath polygon;
 	IGShape shape;
+	IGPanel igPanel;
 	//constructors
 	public ImageGenerator(){
 		height = 100;
 		width = 100;
+		igPanel = new IGPanel();
 		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		colorBackground();
 		shape = new IGShape(3, 3);
@@ -32,6 +37,7 @@ public class ImageGenerator {
 		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		colorBackground();
 		shape = new IGShape(3, 20);
+		igPanel = new IGPanel();
 		createPolygon();
 	}
 	@Override
@@ -48,6 +54,12 @@ public class ImageGenerator {
 			}
 		}
 	}
+	/*
+	 * By taking using a number of sides and an image rectangle, createPolygon
+	 * will create the points/sides of a polygon by using the center of the image
+	 * as the center of a circle then placing the vertices of a polygon at a determined
+	 * radius from the center to create a regular polygon.
+	 */
 	private void createPolygon() {
 		int xPoints[] = new int[shape.sideNumber];
 		int yPoints[] = new int[shape.sideNumber];
@@ -68,16 +80,42 @@ public class ImageGenerator {
 		}
 		polygon.closePath(); //draw line from final point to first point
 	}
+	//return the image to place, resize, etc. 
 	public BufferedImage getImage(){
 		return image;
 	}
-	
+	//return the panel to other draw methods such as GUI
+	public IGPanel getIGPanel(){
+		return igPanel;
+	}
+	//return the polygon instance to draw in other places
 	public GeneralPath getPolygon(){
 		return this.polygon;
 	}
-	
+	/*
+	 * This IGPanel subclass is a JPanel that contains the image and ports to other parts
+	 * of the program such as the GUI. It is important to maintain the shape when the
+	 * program repaints the graphic.
+	 */
+	private class IGPanel extends JPanel{
+		
+		
+		public void paint(Graphics g){
+			Graphics2D g2D = (Graphics2D) g;
+			g.drawImage(getImage(), 0, 0, this);
+			g2D.setPaint(Color.black);
+			g2D.fill(getPolygon());
+			g2D.draw(getPolygon());	
+		}
+	}
+
+	/*
+	 * IGShape is a sbuclass that maintains the characteristics of a shape such as its number of sides.
+	 * This will be useful during extensions to write that information to testing files to verify correct
+	 * mapping of shapes. 
+	 */
 	private class IGShape{
-		int sideNumber, minSides, maxSides, radius;
+		int sideNumber, minSides, maxSides, radius; //min/maxSides indicate the side limit parameters 
 		float interiorAngle, sideLength;
 		public IGShape(){
 			this.minSides = 3;
