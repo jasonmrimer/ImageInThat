@@ -10,8 +10,11 @@ import java.util.List;
 import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 
+import javax.swing.JPanel;
+
 public class ImageRecognizer {
 	BufferedImage image;
+	JPanel panel;
 	Color bgColor, shapeColor, newBGColor;
 	boolean mark[][];
 	
@@ -21,47 +24,54 @@ public class ImageRecognizer {
 		mark = new boolean[image.getWidth()][image.getHeight()];
 		newBGColor = Color.black;
 		flood(image, mark, 0, 0, bgColor, newBGColor);
-	}
-	
+	}	
 	/*
 	 * change from fill to map
 	 */
 	//initial flood fill from: http://www.cis.upenn.edu/~cis110/13sp/hw/hw09/FloodFill.java
 	private static void flood(BufferedImage img, boolean[][] mark, int row, int col, Color srcColor, Color tgtColor) {
-		// make sure row and col are inside the image
-		if (row < 0) return;
-		else if (col < 0) return;
-		else if (row >= img.getHeight()) return;
-		else if (col >= img.getWidth()) return;
-		
-		// make sure this pixel hasn't been visited yet
-		else if (mark[row][col]) return;
-		
-		// make sure this pixel is the right color to fill
-		else if (img.getRGB(col, row) != srcColor.getRGB()) return;
-
-		/*
-		 * if changing from bg to shapeColor
-		 * 	check sides
-		 * if already shapeColor
-		 * 	do not move to another shapeColor because that enters the inside of the shape, we can skip
-		 * 	how to avoid discounting shape edges that actually touch? it may not matter because there will always be touching pixels in the lines
-		 * 		but should focus on the aggregate lines slope rather than immediate neighbors
-		 */
-		
-		else{
-		
-			// fill pixel with target color and mark it as visited
-			img.setRGB(col, row, tgtColor.getRGB());
-			mark[row][col] = true;
-			
-			// recursively fill surrounding pixels
-			// (this is equivalent to depth-first search)
-			flood(img, mark, row - 1, col, srcColor, tgtColor);
-			flood(img, mark, row + 1, col, srcColor, tgtColor);
-			flood(img, mark, row, col - 1, srcColor, tgtColor);
-			flood(img, mark, row, col + 1, srcColor, tgtColor);
+		//testing if coloring works
+		for (int r = 0; r < img.getWidth(); r++){
+			for (int c = 0; c < img.getWidth(); c++){
+				System.out.println(img.getRGB(r, c));
+			}
 		}
+//		System.out.println("start: " + row + ", " + col);
+//		// make sure row and col are inside the image
+//		if (row < 0) return;
+//		else if (col < 0) return;
+//		else if (row >= img.getHeight()) return;
+//		else if (col >= img.getWidth()) return;
+//		
+//		// make sure this pixel hasn't been visited yet
+//		else if (mark[row][col]) return;
+//		
+//		// make sure this pixel is the right color to fill
+//		else if (img.getRGB(col, row) != srcColor.getRGB()){ //return;
+//			System.out.println("non: " + row + ", " + col);
+//
+//		/*
+//		 * if changing from bg to shapeColor
+//		 * 	check sides
+//		 * if already shapeColor
+//		 * 	do not move to another shapeColor because that enters the inside of the shape, we can skip
+//		 * 	how to avoid discounting shape edges that actually touch? it may not matter because there will always be touching pixels in the lines
+//		 * 		but should focus on the aggregate lines slope rather than immediate neighbors
+//		 */
+//		
+////		else{
+//		
+//			// fill pixel with target color and mark it as visited
+//			img.setRGB(row, col, tgtColor.getRGB());
+//			mark[row][col] = true;
+//			
+//			// recursively fill surrounding pixels
+//			// (this is equivalent to depth-first search)
+//			flood(img, mark, row - 1, col, srcColor, tgtColor);
+//			flood(img, mark, row + 1, col, srcColor, tgtColor);
+//			flood(img, mark, row, col - 1, srcColor, tgtColor);
+//			flood(img, mark, row, col + 1, srcColor, tgtColor);
+//		}
 	}
 	 
 	/*
