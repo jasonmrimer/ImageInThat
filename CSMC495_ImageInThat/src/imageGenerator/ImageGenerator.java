@@ -43,7 +43,7 @@ public class ImageGenerator {
 		bgColor = getRandomColor(null);
 		colorBackground(bgColor);
 		//draw the shape into the image
-		shape = new IGShape(3, 8);
+		shape = new IGShape(4, 4);
 		Graphics2D g =  (Graphics2D) image.getGraphics();
 		g.setPaint(shape.getShapeColor());
 		g.draw(shape.getPolygon());
@@ -160,8 +160,9 @@ public class ImageGenerator {
 			sideNumber = random.nextInt(maxSides - minSides + 1) + minSides;
 			interiorAngle = 360 / sideNumber;
 		}
+		//this is the sidelength to use later; the radius is more important as IG uses it to place vertices
 		private void setSideLength(){
-			radius = ((height < width) ? height : width) / 2 - 1; //find radius of image rectangle (-1 ensures gap from border)
+			radius = ((height < width) ? (int) (height * 0.95) : (int) (width * 0.95)) / 2 - 1; //find radius of image rectangle (95% and -1 ensures gap from border)
 			sideLength = (float) (radius / (2 * Math.cos(90 - (180 / sideNumber))));
 		}
 		/*

@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
@@ -20,11 +21,14 @@ public class ImageRecognizer {
 	public ImageRecognizer(BufferedImage image){
 		this.image = image;
 		bgColor = new Color(image.getRGB(0, 0)); //assume the top left pixel is the background since the shape never reaches the corner
-		IRShape shape = new IRShape();
+//		IRShape shape = new IRShape();
 //		flood(image, mark, 0, 0, bgColor, newBGColor);
 		FloodMap fm = new FloodMap(image);
 		System.out.println(fm.getSideNumber());
-		
+		System.out.println(fm.getVertexList().size());
+		for (Point2D point : fm.getVertexList()){
+			System.out.println(point);
+		}
 	}	
 	
 	
