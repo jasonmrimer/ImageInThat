@@ -24,11 +24,7 @@ public class ImageRecognizer {
 //		IRShape shape = new IRShape();
 //		flood(image, mark, 0, 0, bgColor, newBGColor);
 		FloodMap fm = new FloodMap(image);
-		System.out.println(fm.getSideNumber());
-		System.out.println(fm.getVertexList().size());
-		for (Point2D point : fm.getVertexList()){
-			System.out.println(point);
-		}
+		System.out.println("side mapped: " + fm.getSideNumber());
 	}	
 	
 	

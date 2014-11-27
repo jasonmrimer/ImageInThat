@@ -43,11 +43,12 @@ public class ImageGenerator {
 		bgColor = getRandomColor(null);
 		colorBackground(bgColor);
 		//draw the shape into the image
-		shape = new IGShape(4, 4);
+		shape = new IGShape(5, 5);
 		Graphics2D g =  (Graphics2D) image.getGraphics();
 		g.setPaint(shape.getShapeColor());
 		g.draw(shape.getPolygon());
 		g.fill(shape.getPolygon());
+		System.out.println("sides drawn: " + shape.sideNumber);
 	}
 	@Override
 	public String toString(){

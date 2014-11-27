@@ -24,12 +24,13 @@ public class Main { //extends JPanel {
 		
 		ImageGenerator ig = new ImageGenerator(300, 300);
 		ImageRecognizer ir = new ImageRecognizer(ig.getImage());
+		System.exit(0);
 		//Jason's side
 		//frame
-		JFrame frame = new JFrame();
-		frame.getContentPane().add(ig.getIGPanel());
-		frame.setSize(400, 400);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
+//		JFrame frame = new JFrame();
+//		frame.getContentPane().add(ig.getIGPanel());
+//		frame.setSize(400, 400);
+//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//		frame.setVisible(true);
 	}
 }

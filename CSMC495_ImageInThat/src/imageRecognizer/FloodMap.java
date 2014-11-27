@@ -1,5 +1,6 @@
 package imageRecognizer;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -42,21 +43,28 @@ public class FloodMap {
 	 * there will be sides with equal slopes - but not equal equations of the line
 	 */
 	private void map(){
+		//next, is pixel a corner pixel? because pixels are a rectangular grid, we only need to regard
+		//the corner pixels of a line to map its actual slop & endpoints. if any pixel above this pixel is the same color then 
+		//this pixel is not a corner pixel, disregard it
 		//top to bottom, left to right
-		for (int row = 0; row < height; row++){		//rows by height value *This is the Y-Coordinate*
-			for (int col = 0; col < width; col++){	//columns by width *This is the X-Coordinate*
-				if (image.getRGB(col, row) != bgRGB){
-					checkPoint(col, row);	//process the point onto a side's line object
-					break;
+		for (int y = 0; y < height; y++){			//rows by height value *This is the Y-Coordinate*
+			for (int x = 0; x < width; x++){		//columns by width *This is the X-Coordinate*
+				if (image.getRGB(x, y) != bgRGB){	//different from bg = shape
+					if ((image.getRGB(x, y - 1) == bgRGB) || (image.getRGB(x, y + 1) == bgRGB)){		//check above/below to see if corner pixel
+						checkPoint(x, y);			//process the point onto a side's line object
+					}
+					break;							//found boundary, move to next row
 				}
 			}
 		}
 		//top to bottom, right to left
-		for (int row = 0; row < height; row++){			//rows by height value *This is the Y-Coordinate*
-			for (int col = width - 1; col > -1; col--){	//columns by width *This is the X-Coordinate*
-				if (image.getRGB(col, row) != bgRGB){
-					checkPoint(col, row);	//process the point onto a side's line object
-					break;
+		for (int y = 0; y < height; y++){			//rows by height value *This is the Y-Coordinate*
+			for (int x = width - 1; x > -1; x--){	//columns by width *This is the X-Coordinate*
+				if (image.getRGB(x, y) != bgRGB) {	//different than background = shape
+					if ((image.getRGB(x, y - 1) == bgRGB) || (image.getRGB(x, y + 1) == bgRGB)) {		//check above/below to see if corner pixel
+						checkPoint(x, y);			//process the point onto a side's line object
+					}
+					break;								//found boundary, move to next row
 				}
 			}
 		}
@@ -75,19 +83,24 @@ public class FloodMap {
 //				sideList.add(new IRLine(pointList.get(0), pointList.get(1)));
 //				pointList.clear();				//remove all points to make way for new side endpoints
 				sideList.add(new IRLine(pointList.get(0), pointList.get(1)));
-				vertexList.add(pointList.remove(0));
-				vertexList.add(pointList.remove(0));
+				pointList.clear();
+//				vertexList.add(pointList.remove(0));
+//				vertexList.add(pointList.remove(0));
 				return;
 			}
 		}
 		else {	//there are line(s) already mapped
 			Point tempPoint = new Point(x, y);
+			//next, is pixel a corner pixel? because pixels are a rectangular grid, we only need to regard
+			//the corner pixels of a line to map its actual slop & endpoints. if any pixel above this pixel is the same color then 
+			//this pixel is not a corner pixel, disregard it
+			
 			//check if the point fits on any line
 			for (IRLine line : sideList){
 				Point2D removePoint = line.doesExtendLine(tempPoint);	//if the point extends the line it will return the replace endpoint and needs to become a vertex
 				if (removePoint != null) { //extends the side, (may need to remove the old vertex inside the method)
-					vertexList.remove(removePoint);
-					vertexList.add(tempPoint);
+//					vertexList.remove(removePoint);
+//					vertexList.add(tempPoint);
 					return;
 				}
 			}
@@ -98,8 +111,9 @@ public class FloodMap {
 			}
 			else if (pointList.size() == 2){//enough points to make the first line
 				sideList.add(new IRLine(pointList.get(0), pointList.get(1)));
-				vertexList.add(pointList.remove(0));
-				vertexList.add(pointList.remove(0));
+				pointList.clear();
+//				vertexList.add(pointList.remove(0));
+//				vertexList.add(pointList.remove(0));
 				return;
 			}
 		}
@@ -128,95 +142,60 @@ public class FloodMap {
 			yIntercept = p1.getY() - (slope * p1.getX());
 		}
 		
-		public Point2D doesExtendLine(Point point){
+		public Point2D doesExtendLine(Point2D point){
 			//use line functions to determine if point is on line by creating a fake line with one of the
 			//current endpoints in between the tempPoint 
 			
 			//firstly, is the point between the endpoints and on the line?
-			if (this.contains(point)) return null;	//break condition - we do not care about the point because it does not extend the line
+			if (this.contains(point)) {
+				return null;	//break condition - we do not care about the point because it does not extend the line
+			}
+			
+			
+			
 			
 			//check whether the point extends the line
 			//using the midpoint, there will always be one endpoint at a negative distance
 			//and one endpoint at a positive distance (to the right/left of endpoint). then check
 			//whether the new point is to the left or right and compare it with the endpoint that 
 			//shares direction
-			Point midPoint = new Point((int) (getX1() + (getX1() - getX2()) / 2),(int) (getY1() + (getY1() - getY2()) / 2));
-			double p1Dist = p1.distance(midPoint); //get distance from mid
-			double p2Dist = p2.distance(midPoint); //get distance from mid
-			double pointDist = point.distance(midPoint);
-			p1Dist = (p1.getX() - midPoint.getX() < 0) ? -(p1Dist) : p1Dist;		//change distance based on if to the left/right of point
-			p2Dist = (p2.getX() - midPoint.getX() < 0) ? -(p2Dist) : p2Dist;		//change distance based on if to the left/right of point
-			pointDist = (point.getX() - midPoint.getX() < 0) ? -(pointDist) : pointDist;	//change distance based on if to the left/right of point
+//			Point2D midPoint = new Point((int) (getX1() + (getX1() - getX2()) / 2),(int) (getY1() + (getY1() - getY2()) / 2));	//create midpoint
+//			double p1Dist = p1.distance(midPoint); 			//get distance from mid
+//			double p2Dist = p2.distance(midPoint);			//get distance from mid
+//			double pointDist = point.distance(midPoint);	//get inputPoint distance from mid
+//			p1Dist = (p1.getX() - midPoint.getX() < 0) ? -(p1Dist) : p1Dist;		//change distance based on if to the left/right of point
+//			p2Dist = (p2.getX() - midPoint.getX() < 0) ? -(p2Dist) : p2Dist;		//change distance based on if to the left/right of point
+//			pointDist = (point.getX() - midPoint.getX() < 0) ? -(pointDist) : pointDist;	//change distance based on if to the left/right of point
 			
-			//check whether to compare to endpoint 1 or 2 based on direction from midpoint
-			if ((p1Dist < 0 && pointDist < 0) || (p1Dist > 0 && pointDist > 0)){ 			//p1 shares direction: compare
-				if (point.distance(midPoint) > p1.distance(midPoint)) { 			//point is farther from mid than endpoint, replace endpoint
-					IRLine tempLine = new IRLine(point, getP2());	//create a new line with endpoints (input)point & p2
-					if (tempLine.contains(getP1())) { //check if original endpoint falls on the line
-						Point2D tempPoint = p1;	//hold the original P1 to return it
-						this.setLine(point, p2);
-						return tempPoint;
-					}
-					else{	//it does not extend the line because the original endpoint does not fall on the new line
-						return null;
-					}						
-				}
+			IRLine p1ToPoint = new IRLine(p1, point);
+			IRLine p2ToPoint = new IRLine(p2, point);
+			
+			if (p1ToPoint.getBounds2D().contains(p2)){		//new line contains old endpoint; discard old endpoint
+				Point2D temp = p2;
+				this.setLine(p1, point);
+				return p2;
 			}
-			
-			
-			
-			else if ((p2Dist < 0 && pointDist < 0) || (p2Dist > 0 && pointDist > 0)) { //shares direction with p2
-				if (point.distance(midPoint) > p2.distance(midPoint)) { 			//point is farther from mid than endpoint, replace endpoint
-					IRLine tempLine = new IRLine(getP1(), point);	//create a new line with endpoints (input)point & p2
-					if (tempLine.contains(getP2())) { //check if original endpoint falls on the line
-						Point2D tempPoint = p2;	//hold the original P1 to return it
-						this.setLine(p1, point);
-						return tempPoint;
-					}
-					else{	//it does not extend the line because the original endpoint does not fall on the new line
-						return null;
-					}	
-				}
+			else if (p2ToPoint.getBounds2D().contains(p1)){	//new line contains old endpoint; discard old endpoint
+				Point2D temp = p1;
+				this.setLine(point, p1);
+				return temp;
 			}
-			return null;			
+			return null;
 		}
 			
-			
-			
-			
-			
-//			
-//			//use equation of line to determine if point is on line (not segment but "infinite" line
-//			if ((point.getY() - yIntercept <= (slope * (1 + slopeAllowance)) * point.getX()) && 
-//					(point.getY() - yIntercept <= (slope * (1 - slopeAllowance) * point.getX()))) { //on line within allowance
-//				//check whether the point extends the line
-//				Point midPoint = new Point((int) (getX1() + (getX1() - getX2()) / 2),(int) (getY1() + (getY1() - getY2()) / 2));
-//				double p1Dist = this.getP1().distance(midPoint); //get distance from mid
-//				double p2Dist = this.getP2().distance(midPoint); //get distance from mid
-//				double pointDist = point.distance(midPoint);
-//				p1Dist = (this.getP1().getX() - midPoint.getX() < 0) ? -(p1Dist) : p1Dist;		//change distance based on if to the left/right of point
-//				p2Dist = (this.getP2().getX() - midPoint.getX() < 0) ? -(p2Dist) : p2Dist;		//change distance based on if to the left/right of point
-//				pointDist = (point.getX() - midPoint.getX() < 0) ? -(pointDist) : pointDist;	//change distance based on if to the left/right of point
-//				//check whether to compare to endpoint 1 or 2 based on direction from midpoint
-//				if ((p1Dist < 0 && pointDist < 0) || (p1Dist > 0 && pointDist > 0)){ 			//both share direction so compare
-//					if (point.distance(midPoint) > this.getP1().distance(midPoint)) { 			//point is farther from mid than endpoint, replace endpoint
-//						this.setLine(point, this.getP2());
-//					}
-//				}
-//				else { //shares with p2
-//					if (point.distance(midPoint) > this.getP2().distance(midPoint)) { 			//point is farther from mid than endpoint, replace endpoint
-//						this.setLine(this.getP1(), point);
-//					}
-//				}
-//				return true;
-//			}
-//			else return false;
-//		}
-		
+		private Point2D switchPoints(Point2D removePoint, Point2D insertPoint) {
+			Point2D tempPoint = removePoint;
+			removePoint = insertPoint;
+			return tempPoint;
+		}
+
 		@Override
 		public Rectangle2D getBounds2D() {
-			// TODO Auto-generated method stub
-			return null;
+			int x = (getX1() < getX2()) ? (int) getX1() : (int) getX2();
+			int y = (getY1() < getY2()) ? (int) getY1() : (int) getY2();
+			int width = Math.abs((int)(getX1() - getX2()));
+			int height = Math.abs((int)(getY1() - getY2()));
+			return new Rectangle(new Point(x, y), new Dimension(width, height));
 		}
 
 		@Override
@@ -251,8 +230,10 @@ public class FloodMap {
 
 		@Override
 		public void setLine(double x1, double y1, double x2, double y2) {
-			p1.setLocation(x1, x2);
-			p2.setLocation(x2, y2);
+			p1 = new Point((int) x1, (int) y1);
+			p2 = new Point((int) x2, (int) y2);
+//			this.p1.setLocation(x1, x2);
+//			this.p2.setLocation(x2, y2);
 		}
 		
 	}

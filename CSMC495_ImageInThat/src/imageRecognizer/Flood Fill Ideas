@@ -1,3 +1,68 @@
+//			//check whether to compare to endpoint 1 or 2 based on direction from midpoint
+//			if ((p1Dist < 0 && pointDist < 0) || (p1Dist > 0 && pointDist > 0)){ 			//p1 shares direction: compare
+//				if (point.distance(midPoint) > p1.distance(midPoint)) { 			//point is farther from mid than endpoint, replace endpoint
+//					IRLine tempLine = new IRLine(point, p2);	//create a new line with endpoints (input)point & p2
+//					if (tempLine.getBounds2D().contains(p1)) { //check if original endpoint falls on the line
+//						System.out.println("contain");
+//						Point2D tempPoint = p1;	//hold the original P1 to return it
+//						this.setLine(point, p2);
+//						return tempPoint;
+//					}
+//					else{	//it does not extend the line because the original endpoint does not fall on the new line
+//						return null;
+//					}						
+//				}
+//			}
+//			
+//			
+//			
+//			else if ((p2Dist < 0 && pointDist < 0) || (p2Dist > 0 && pointDist > 0)) { //shares direction with p2
+//				if (point.distance(midPoint) > p2.distance(midPoint)) { 			//point is farther from mid than endpoint, replace endpoint
+//					IRLine tempLine = new IRLine(p1, point);	//create a new line with endpoints (input)point & p2
+//					if (tempLine.getBounds2D().contains(p2)) { //check if original endpoint falls on the line
+//						System.out.println("contain");
+//						Point2D tempPoint = p2;	//hold the original P1 to return it
+//						this.setLine(p1, point);
+//						return tempPoint;
+//					}
+//					else{	//it does not extend the line because the original endpoint does not fall on the new line
+//						return null;
+//					}	
+//				}
+//			}
+//			return null;					
+			
+			
+			
+//			
+//			//use equation of line to determine if point is on line (not segment but "infinite" line
+//			if ((point.getY() - yIntercept <= (slope * (1 + slopeAllowance)) * point.getX()) && 
+//					(point.getY() - yIntercept <= (slope * (1 - slopeAllowance) * point.getX()))) { //on line within allowance
+//				//check whether the point extends the line
+//				Point midPoint = new Point((int) (getX1() + (getX1() - getX2()) / 2),(int) (getY1() + (getY1() - getY2()) / 2));
+//				double p1Dist = this.getP1().distance(midPoint); //get distance from mid
+//				double p2Dist = this.getP2().distance(midPoint); //get distance from mid
+//				double pointDist = point.distance(midPoint);
+//				p1Dist = (this.getP1().getX() - midPoint.getX() < 0) ? -(p1Dist) : p1Dist;		//change distance based on if to the left/right of point
+//				p2Dist = (this.getP2().getX() - midPoint.getX() < 0) ? -(p2Dist) : p2Dist;		//change distance based on if to the left/right of point
+//				pointDist = (point.getX() - midPoint.getX() < 0) ? -(pointDist) : pointDist;	//change distance based on if to the left/right of point
+//				//check whether to compare to endpoint 1 or 2 based on direction from midpoint
+//				if ((p1Dist < 0 && pointDist < 0) || (p1Dist > 0 && pointDist > 0)){ 			//both share direction so compare
+//					if (point.distance(midPoint) > this.getP1().distance(midPoint)) { 			//point is farther from mid than endpoint, replace endpoint
+//						this.setLine(point, this.getP2());
+//					}
+//				}
+//				else { //shares with p2
+//					if (point.distance(midPoint) > this.getP2().distance(midPoint)) { 			//point is farther from mid than endpoint, replace endpoint
+//						this.setLine(this.getP1(), point);
+//					}
+//				}
+//				return true;
+//			}
+//			else return false;
+//		}
+		
+
 	// WARNING: the flood fill method below causes a stack overflow and will as long as it runs iteratively
 	
 //	/*
