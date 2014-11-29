@@ -5,35 +5,42 @@
 package imageRecognizer;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
+import javax.swing.JPanel;
+
 public class ImageRecognizer {
+	BufferedImage image;
+	JPanel panel;
+	Color bgColor, shapeColor, newBGColor;
+	
+	public ImageRecognizer(BufferedImage image){
+		this.image = image;
+		bgColor = new Color(image.getRGB(0, 0)); //assume the top left pixel is the background since the shape never reaches the corner
+//		IRShape shape = new IRShape();
+//		flood(image, mark, 0, 0, bgColor, newBGColor);
+		FloodMap fm = new FloodMap(image);
+		System.out.println("sides mapped: " + fm.getSideNumber());
+	}	
+	
+	
+	
 	/*
-	 * change from fill to map
+	 * IRShape will contain the information relating to the shape being mapped
+	 * by IR. It will have an dynamic number of sides and will hold all the information will
+	 * IR maps.
 	 */
-	//initial flood fill from: http://www.cis.upenn.edu/~cis110/13sp/hw/hw09/FloodFill.java
-	 private static void flood(BufferedImage img, boolean[][] mark, int row, int col, Color srcColor, Color tgtColor) {
-		// make sure row and col are inside the image
-		if (row < 0) return;
-		if (col < 0) return;
-		if (row >= img.getHeight()) return;
-		if (col >= img.getWidth()) return;
-		
-		// make sure this pixel hasn't been visited yet
-		if (mark[row][col]) return;
-		
-		// make sure this pixel is the right color to fill
-		if (img.getRGB(col, row) != srcColor.getRGB()) return;
-		
-		// fill pixel with target color and mark it as visited
-//		img.set(col, row, tgtColor);
-		mark[row][col] = true;
-		
-		// recursively fill surrounding pixels
-		// (this is equivelant to depth-first search)
-		flood(img, mark, row - 1, col, srcColor, tgtColor);
-		flood(img, mark, row + 1, col, srcColor, tgtColor);
-		flood(img, mark, row, col - 1, srcColor, tgtColor);
-		flood(img, mark, row, col + 1, srcColor, tgtColor);
+	private class IRShape{
+		ArrayList<Line2D> sides;
+		int sideNumber, radius; //min/maxSides indicate the side limit parameters 
+		Color shapeColor;
+		float interiorAngle, sideLength;
+		IRShape(){
+			sides = new ArrayList<Line2D>();
 		}
+	}
 }

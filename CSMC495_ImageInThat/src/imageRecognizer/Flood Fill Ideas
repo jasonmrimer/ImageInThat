@@ -1,0 +1,232 @@
+//	 * now, i can take further advantage of slope such that, as long as the slope != 0 the first point the line
+	 * finds from the left must be a vertex then each next point will be on that line until the slope changes then that
+	 * point was a vertex. then reverse it from the right. 
+	 * oh! just use the slopes - for each change in slope there should be a side and that is the number of sides... except
+	 * there will be sides with equal slopes - but not equal equations of the line
+	 */		
+
+
+	//check whether to compare to endpoint 1 or 2 based on direction from midpoint
+//			if ((p1Dist < 0 && pointDist < 0) || (p1Dist > 0 && pointDist > 0)){ 			//p1 shares direction: compare
+//				if (point.distance(midPoint) > p1.distance(midPoint)) { 			//point is farther from mid than endpoint, replace endpoint
+//					IRLine tempLine = new IRLine(point, p2);	//create a new line with endpoints (input)point & p2
+//					if (tempLine.getBounds2D().contains(p1)) { //check if original endpoint falls on the line
+//						System.out.println("contain");
+//						Point2D tempPoint = p1;	//hold the original P1 to return it
+//						this.setLine(point, p2);
+//						return tempPoint;
+//					}
+//					else{	//it does not extend the line because the original endpoint does not fall on the new line
+//						return null;
+//					}						
+//				}
+//			}
+//			
+//			
+//			
+//			else if ((p2Dist < 0 && pointDist < 0) || (p2Dist > 0 && pointDist > 0)) { //shares direction with p2
+//				if (point.distance(midPoint) > p2.distance(midPoint)) { 			//point is farther from mid than endpoint, replace endpoint
+//					IRLine tempLine = new IRLine(p1, point);	//create a new line with endpoints (input)point & p2
+//					if (tempLine.getBounds2D().contains(p2)) { //check if original endpoint falls on the line
+//						System.out.println("contain");
+//						Point2D tempPoint = p2;	//hold the original P1 to return it
+//						this.setLine(p1, point);
+//						return tempPoint;
+//					}
+//					else{	//it does not extend the line because the original endpoint does not fall on the new line
+//						return null;
+//					}	
+//				}
+//			}
+//			return null;					
+			
+			
+			
+//			
+//			//use equation of line to determine if point is on line (not segment but "infinite" line
+//			if ((point.getY() - yIntercept <= (slope * (1 + slopeAllowance)) * point.getX()) && 
+//					(point.getY() - yIntercept <= (slope * (1 - slopeAllowance) * point.getX()))) { //on line within allowance
+//				//check whether the point extends the line
+//				Point midPoint = new Point((int) (getX1() + (getX1() - getX2()) / 2),(int) (getY1() + (getY1() - getY2()) / 2));
+//				double p1Dist = this.getP1().distance(midPoint); //get distance from mid
+//				double p2Dist = this.getP2().distance(midPoint); //get distance from mid
+//				double pointDist = point.distance(midPoint);
+//				p1Dist = (this.getP1().getX() - midPoint.getX() < 0) ? -(p1Dist) : p1Dist;		//change distance based on if to the left/right of point
+//				p2Dist = (this.getP2().getX() - midPoint.getX() < 0) ? -(p2Dist) : p2Dist;		//change distance based on if to the left/right of point
+//				pointDist = (point.getX() - midPoint.getX() < 0) ? -(pointDist) : pointDist;	//change distance based on if to the left/right of point
+//				//check whether to compare to endpoint 1 or 2 based on direction from midpoint
+//				if ((p1Dist < 0 && pointDist < 0) || (p1Dist > 0 && pointDist > 0)){ 			//both share direction so compare
+//					if (point.distance(midPoint) > this.getP1().distance(midPoint)) { 			//point is farther from mid than endpoint, replace endpoint
+//						this.setLine(point, this.getP2());
+//					}
+//				}
+//				else { //shares with p2
+//					if (point.distance(midPoint) > this.getP2().distance(midPoint)) { 			//point is farther from mid than endpoint, replace endpoint
+//						this.setLine(this.getP1(), point);
+//					}
+//				}
+//				return true;
+//			}
+//			else return false;
+//		}
+		
+
+	// WARNING: the flood fill method below causes a stack overflow and will as long as it runs iteratively
+	
+//	/*
+//	 * change from fill to map
+//	 */
+//	//initial flood fill from: http://www.cis.upenn.edu/~cis110/13sp/hw/hw09/FloodFill.java
+//	private static void flood(BufferedImage img, boolean[][] mark, int row, int col, Color srcColor, Color tgtColor) {
+//		System.out.println("start: " + row + ", " + col);
+//		// make sure row and col are inside the image
+//		if (row < 0) return;
+//		else if (col < 0) return;
+//		else if (row >= img.getWidth()) return;
+//		else if (col >= img.getHeight()) return;
+//		
+//		// make sure this pixel hasn't been visited yet
+//		if (mark[row][col]) return;
+//		
+//		// make sure this pixel is the right color to fill
+//		if (img.getRGB(row, col) == srcColor.getRGB()){ //return;
+//			mark[row][col] = true;
+//			System.out.println("non: " + row + ", " + col);
+////			return;
+//		}
+//
+//		/*
+//		 * if changing from bg to shapeColor
+//		 * 	check sides
+//		 * if already shapeColor
+//		 * 	do not move to another shapeColor because that enters the inside of the shape, we can skip
+//		 * 	how to avoid discounting shape edges that actually touch? it may not matter because there will always be touching pixels in the lines
+//		 * 		but should focus on the aggregate lines slope rather than immediate neighbors
+//		 */
+//		
+//		// fill pixel with target color and mark it as visited
+////		img.setRGB(row, col, tgtColor.getRGB());
+//		mark[row][col] = true;
+//		
+//		// recursively fill surrounding pixels
+//		// (this is equivalent to depth-first search)
+//		flood(img, mark, row - 1, col, srcColor, tgtColor);
+//		flood(img, mark, row + 1, col, srcColor, tgtColor);
+//		flood(img, mark, row, col - 1, srcColor, tgtColor);
+//		flood(img, mark, row, col + 1, srcColor, tgtColor);
+////		}
+//	}
+//	 
+	
+	
+	
+	
+	
+	
+	
+	
+	/***
+	 * from: http://imagej.nih.gov/ij/source/ij/process/FloodFiller.java
+	 */
+	/**	This class, which does flood filling, is used by the floodFill() macro function and
+	by the particle analyzer
+	The Wikipedia at "http://en.wikipedia.org/wiki/Flood_fill" has a good 
+	description of the algorithm used here as well as examples in C and Java. 
+*/
+//	int maxStackSize = 500; // will be increased as needed
+//	int[] xstack = new int[maxStackSize];
+//	int[] ystack = new int[maxStackSize];
+//	int stackSize;
+//	BufferedImage image;
+//	int max;
+//	boolean isFloat;
+//  
+//	public FloodMap(BufferedImage image) {
+//		this.image = image;
+//		System.out.println(fill(0,0));
+////		isFloat = image instanceof FloatProcessor;
+//	}
+//
+//	/** Does a 4-connected flood fill using the current fill/draw
+//		value, which is defined by ImageProcessor.setValue(). */
+//	public boolean fill(int x, int y) {
+//		int width = image.getWidth();
+//		int height = image.getHeight();
+//		int colorRGB = image.getRGB(x, y); //set the current color for later use
+//		
+//		fillLine(image, colorRGB, x, x, y); //color a single pixel? 
+//		
+//		int newColorRGB = image.getRGB(x, y); //...same color as colorRGB - always?
+//		
+//		image.setRGB(x, y, colorRGB); //recolor pixel its own color?
+//		
+//		if (colorRGB == newColorRGB) return false;
+//		stackSize = 0;
+//		push(x, y);
+//		
+//		while (true) {   
+//			x = popx(); 
+//			if (x == -1) return true;
+//			y = popy();
+//			if (image.getRGB(x, y) != colorRGB) continue;
+//			int x1 = x; int x2 = x;
+//			while (image.getRGB(x1, y) == colorRGB && x1 >= 0) x1--; // find start of scan-line
+//			x1++;
+//			//insert a do while?
+//			while (image.getRGB(x2,y) == colorRGB && x2 < width) x2++;  // find end of scan-line                 
+//			fillLine(image, colorRGB, x1, x2, y); // fill scan-line
+//			boolean inScanLine = false;
+//			for (int i = x1; i <= x2; i++) { // find scan-lines above this one
+//				if (!inScanLine && y > 0 && image.getRGB(i, y - 1) == colorRGB)
+//					{push(i, y - 1); inScanLine = true;}
+//				else if (inScanLine && y > 0 && image.getRGB(i, y - 1) != colorRGB)
+//					inScanLine = false;
+//			}
+//			inScanLine = false;
+//			for (int i=x1; i<=x2; i++) { // find scan-lines below this one
+//				if (!inScanLine && y < height - 1 && image.getRGB(i,y+1) == colorRGB)
+//					{push(i, y+1); inScanLine = true;}
+//				else if (inScanLine && y < height - 1 && image.getRGB(i,y+1) != colorRGB)
+//					inScanLine = false;
+//			}
+//		}        
+//	}
+//	
+//	final void push(int x, int y) {
+//		stackSize++;
+//		if (stackSize == maxStackSize) {
+//			int[] newXStack = new int[maxStackSize*2];
+//			int[] newYStack = new int[maxStackSize*2];
+//			System.arraycopy(xstack, 0, newXStack, 0, maxStackSize);
+//			System.arraycopy(ystack, 0, newYStack, 0, maxStackSize);
+//			xstack = newXStack;
+//			ystack = newYStack;
+//			maxStackSize *= 2;
+//		}
+//		xstack[stackSize - 1] = x;
+//		ystack[stackSize - 1] = y;
+//	} 
+//	
+//	final int popx() {
+//		if (stackSize == 0)
+//			return -1;
+//		else
+//            return xstack[stackSize - 1];
+//	}
+//
+//	final int popy() {
+//        int value = ystack[stackSize - 1];
+//        stackSize--;
+//        return value;
+//	}
+//
+//	final void fillLine(BufferedImage image, int colorRGB, int x1, int x2, int y) {
+//		//set line from left to right even if it comes in reverse
+//		if (x1 > x2) {
+//			int t = x1; 
+//			x1 = x2; 
+//			x2 = t;
+//		}
+//		for (int x = x1; x <= x2; x++)
+//			image.setRGB(x, y, colorRGB);
+//	}
