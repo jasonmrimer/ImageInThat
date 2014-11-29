@@ -9,8 +9,10 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.geom.GeneralPath;
 import java.awt.image.*;
+import java.util.ArrayList;
 import java.util.Random;
 
 import javax.swing.JPanel;
@@ -30,7 +32,7 @@ public class ImageGenerator {
 		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		bgColor = getRandomColor(null);
 		colorBackground(bgColor);
-		shape = new IGShape(3, 3);
+		shape = new IGShape(5, 5);
 	}
 	public ImageGenerator(int width, int height){
 		//set variables
@@ -43,7 +45,7 @@ public class ImageGenerator {
 		bgColor = getRandomColor(null);
 		colorBackground(bgColor);
 		//draw the shape into the image
-		shape = new IGShape(5, 5);
+		shape = new IGShape(25, 25);
 		Graphics2D g =  (Graphics2D) image.getGraphics();
 		g.setPaint(shape.getShapeColor());
 		g.draw(shape.getPolygon());
@@ -100,6 +102,10 @@ public class ImageGenerator {
 	public IGPanel getIGPanel(){
 		return igPanel;
 	}
+	//return the IGShape (1 for now)
+	public IGShape getIGShape(){
+		return this.shape;
+	}
 	
 	/*
 	 * This IGPanel subclass is a JPanel that contains the image and ports to other parts
@@ -123,13 +129,15 @@ public class ImageGenerator {
 	 * This will be useful during extensions to write that information to testing files to verify correct
 	 * mapping of shapes. 
 	 */
-	private class IGShape{
+	public class IGShape{
+		ArrayList<Point> vertices;
 		int sideNumber, minSides, maxSides, radius; //min/maxSides indicate the side limit parameters 
 		Color shapeColor;
 		float interiorAngle, sideLength;
 		GeneralPath polygon;
 		
 		public IGShape(){
+			vertices = new ArrayList<Point>();
 			this.minSides = 3;
 			this.maxSides = 6;
 			shapeColor = getRandomColor(bgColor);
@@ -137,6 +145,7 @@ public class ImageGenerator {
 			createPolygon();
 		}
 		public IGShape(int minSides, int maxSides){
+			vertices = new ArrayList<Point>();
 			this.minSides = minSides;
 			this.maxSides = maxSides;
 			shapeColor = getRandomColor(bgColor);
@@ -150,6 +159,10 @@ public class ImageGenerator {
 		//return the polygon instance to draw in other places
 		public GeneralPath getPolygon(){
 			return this.polygon;
+		}
+		//return vertex collection
+		public ArrayList<Point> getVertices(){
+			return this.vertices;
 		}
 		private void setSides(){
 			setSideNumber();
@@ -179,17 +192,23 @@ public class ImageGenerator {
 			double theta = 0;
 			//plot the points as if on a circle using the radius from the center of the image 
 			for (int index = 0; index < sideNumber; index++){
-				xPoints[index] = center[0] + (int) (radius * Math.cos(Math.toRadians(theta)));
-				yPoints[index] = center[1] + (int) (radius * Math.sin(Math.toRadians(theta)));
+				vertices.add(new Point(center[0] + (int) (radius * Math.cos(Math.toRadians(theta))),
+						center[1] + (int) (radius * Math.sin(Math.toRadians(theta)))));
+//				xPoints[index] = center[0] + (int) (radius * Math.cos(Math.toRadians(theta)));
+//				yPoints[index] = center[1] + (int) (radius * Math.sin(Math.toRadians(theta)));
 				theta += 360 / sideNumber;
 			}
 			//code from: https://docs.oracle.com/javase/tutorial/2d/geometry/arbitrary.html
 			polygon = new GeneralPath(GeneralPath.WIND_EVEN_ODD, xPoints.length);
-			polygon.moveTo(xPoints[0], yPoints[0]);
+//			polygon.moveTo(xPoints[0], yPoints[0]);
+			polygon.moveTo(vertices.get(0).getX(), vertices.get(0).getY());
 			//loop through points, drawing lines between each 
-			for (int index = 1; index < xPoints.length; index++) {
-		        polygon.lineTo(xPoints[index], yPoints[index]);
+			for (Point vertex : vertices){
+				 polygon.lineTo(vertex.getX(), vertex.getY());
 			}
+//			for (int index = 1; index < xPoints.length; index++) {
+//		        polygon.lineTo(xPoints[index], yPoints[index]);
+//			}
 			polygon.closePath(); //draw line from final point to first point
 		}
 	}

@@ -24,7 +24,7 @@ public class ImageRecognizer {
 //		IRShape shape = new IRShape();
 //		flood(image, mark, 0, 0, bgColor, newBGColor);
 		FloodMap fm = new FloodMap(image);
-		System.out.println("side mapped: " + fm.getSideNumber());
+		System.out.println("sides mapped: " + fm.getSideNumber());
 	}	
 	
 	

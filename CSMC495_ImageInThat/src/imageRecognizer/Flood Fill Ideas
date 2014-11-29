@@ -1,4 +1,12 @@
-//			//check whether to compare to endpoint 1 or 2 based on direction from midpoint
+//	 * now, i can take further advantage of slope such that, as long as the slope != 0 the first point the line
+	 * finds from the left must be a vertex then each next point will be on that line until the slope changes then that
+	 * point was a vertex. then reverse it from the right. 
+	 * oh! just use the slopes - for each change in slope there should be a side and that is the number of sides... except
+	 * there will be sides with equal slopes - but not equal equations of the line
+	 */		
+
+
+	//check whether to compare to endpoint 1 or 2 based on direction from midpoint
 //			if ((p1Dist < 0 && pointDist < 0) || (p1Dist > 0 && pointDist > 0)){ 			//p1 shares direction: compare
 //				if (point.distance(midPoint) > p1.distance(midPoint)) { 			//point is farther from mid than endpoint, replace endpoint
 //					IRLine tempLine = new IRLine(point, p2);	//create a new line with endpoints (input)point & p2
