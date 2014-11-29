@@ -25,19 +25,6 @@ public class Main { //extends JPanel {
 //		Driver driver = new Driver();
 		
 		ImageGenerator ig = new ImageGenerator(300, 300);
-		Double x1, x2, y1, y2, slope;
-		for (int vertex = 1; vertex < ig.getIGShape().getVertices().size(); vertex++){
-			x1 =  ig.getIGShape().getVertices().get(vertex).getX();
-			x2 =  ig.getIGShape().getVertices().get(vertex - 1).getX();
-			y1 =  ig.getIGShape().getVertices().get(vertex).getY();
-			y2 =  ig.getIGShape().getVertices().get(vertex - 1).getY();
-			slope = (x1 - x2 == 0) ? null : (y1 - y2) / (x1 - x2);
-			if (slope == null) System.out.println("undef");  
-			else System.out.println(slope);
-		}
-		
-		
-		
 		ImageRecognizer ir = new ImageRecognizer(ig.getImage());
 
 //		System.exit(0);

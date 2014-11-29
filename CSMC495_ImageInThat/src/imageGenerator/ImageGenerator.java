@@ -51,6 +51,18 @@ public class ImageGenerator {
 		g.draw(shape.getPolygon());
 		g.fill(shape.getPolygon());
 		System.out.println("sides drawn: " + shape.sideNumber);
+		//use to test 
+		Double x1, x2, y1, y2, slope;
+		for (int vertex = 1; vertex < this.getIGShape().getVertices().size(); vertex++){
+			x1 =  this.getIGShape().getVertices().get(vertex).getX();
+			x2 =  this.getIGShape().getVertices().get(vertex - 1).getX();
+			y1 =  this.getIGShape().getVertices().get(vertex).getY();
+			y2 =  this.getIGShape().getVertices().get(vertex - 1).getY();
+			slope = (x1 - x2 == 0) ? null : (y1 - y2) / (x1 - x2);
+			if (slope == null) System.out.println("undef");  
+			else System.out.println(slope);
+		}
+		
 	}
 	@Override
 	public String toString(){
