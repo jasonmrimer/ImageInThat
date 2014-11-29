@@ -22,11 +22,14 @@ public class Main { //extends JPanel {
 	public static void main(String arg[]){
 		//John's side
 		//Open memory load
-//		Driver driver = new Driver();
+		Driver driver = new Driver();
 		
 		ImageGenerator ig = new ImageGenerator(300, 300);
 		ImageRecognizer ir = new ImageRecognizer(ig.getImage());
 
+//		ig.getIGShape().getSideNmber()();	//John, use this to get the number of sides 
+//		ig.getIGPanel();	//John, use this to get the panel and put in your GUI
+		
 //		System.exit(0);
 		//Jason's side
 		//frame
