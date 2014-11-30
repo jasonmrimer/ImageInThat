@@ -21,8 +21,6 @@ public class ImageRecognizer {
 	public ImageRecognizer(BufferedImage image){
 		this.image = image;
 		bgColor = new Color(image.getRGB(0, 0)); //assume the top left pixel is the background since the shape never reaches the corner
-//		IRShape shape = new IRShape();
-//		flood(image, mark, 0, 0, bgColor, newBGColor);
 		FloodMap fm = new FloodMap(image);
 		System.out.println("sides mapped: " + fm.getSideNumber());
 	}	

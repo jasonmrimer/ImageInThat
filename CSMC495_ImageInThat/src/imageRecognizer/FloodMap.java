@@ -34,10 +34,6 @@ public class FloodMap {
 		points = new Stack<Point>();
 		points.push(new Point(0,0));
 		map();
-		
-//		for (IRLine side : sideList){
-//			System.out.println(side.getP1().distance(side.getP2()));
-//		}
 	}
 	
 	/*
@@ -60,12 +56,6 @@ public class FloodMap {
 				if (image.getRGB(x, y) != bgRGB){	//different from bg = shape
 					if ((image.getRGB(x, y - 1) == bgRGB) || (image.getRGB(x, y + 1) == bgRGB)){		//check above/below to see if corner pixel
 						checkPoint(x, y);			//process the point onto a side's line object
-						slope = ((x - points.peek().getX()) == 0) ? null : (y - points.peek().getY()) / (x - points.pop().getX());
-						if (slope == null) System.out.println("{" + x + ", " + y + "} _ undef");
-						else System.out.println("{" + x + ", " + y + "} = " + slope);
-//						System.out.println("{" + x + ", " + y + "} _ " + ((x - points.peek().getX()) - (y - points.pop().getY()) / 2)); //something important happened here...
-						points.push(new Point(x, y));
-//						if ((image.getRGB(x, y - 1) == bgRGB) && (image.getRGB(x, y + 1) == bgRGB)) vertices++;					
 					}
 					break;							//found boundary, move to next row
 				}
@@ -77,12 +67,6 @@ public class FloodMap {
 				if (image.getRGB(x, y) != bgRGB) {	//different than background = shape
 					if ((image.getRGB(x, y - 1) == bgRGB) || (image.getRGB(x, y + 1) == bgRGB)) {		//check above/below to see if corner pixel
 						checkPoint(x, y);			//process the point onto a side's line object
-						slope = ((x - points.peek().getX()) == 0) ? null : (y - points.peek().getY()) / (x - points.pop().getX());
-						if (slope == null) System.out.println("{" + x + ", " + y + "} _ undef");
-						else System.out.println("{" + x + ", " + y + "} = " + slope);
-//						System.out.println("{" + x + ", " + y + "} _ " + ((x - points.peek().getX()) - (y - points.pop().getY()) / 2)); //something important happened here...
-						points.push(new Point(x, y));
-//						if ((image.getRGB(x, y - 1) == bgRGB) && (image.getRGB(x, y + 1) == bgRGB)) vertices++;					
 					}
 					break;							//found boundary, move to next row
 				}
@@ -163,12 +147,12 @@ public class FloodMap {
 			IRLine p1ToPoint = new IRLine(p1, point);
 			IRLine p2ToPoint = new IRLine(p2, point);
 			Point temp = new Point();
-			if (p1ToPoint.getBounds2D().contains(p2) && Math.abs(1 - (p2ToPoint.slope / this.slope)) > slopeAllowance){		//new line contains old endpoint; discard old endpoint
+			if (p1ToPoint.getBounds2D().contains(p2)){		//new line contains old endpoint; discard old endpoint
 				temp = p2;
 				this.setLine(p1, point);
 				return temp;
 			}
-			else if (p2ToPoint.getBounds2D().contains(p1) && Math.abs(1 - (p1ToPoint.slope / this.slope)) > slopeAllowance){	//new line contains old endpoint; discard old endpoint
+			else if (p2ToPoint.getBounds2D().contains(p1)){	//new line contains old endpoint; discard old endpoint
 				temp = p1;
 				this.setLine(point, p2);
 				return temp;

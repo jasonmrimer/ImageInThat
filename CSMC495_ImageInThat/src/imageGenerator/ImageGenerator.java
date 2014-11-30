@@ -32,7 +32,7 @@ public class ImageGenerator {
 		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		bgColor = getRandomColor(null);
 		colorBackground(bgColor);
-		shape = new IGShape(5, 5);
+		shape = new IGShape(4, 4);
 	}
 	public ImageGenerator(int width, int height){
 		//set variables
@@ -45,24 +45,12 @@ public class ImageGenerator {
 		bgColor = getRandomColor(null);
 		colorBackground(bgColor);
 		//draw the shape into the image
-		shape = new IGShape(25, 25);
+		shape = new IGShape(3, 4);
 		Graphics2D g =  (Graphics2D) image.getGraphics();
 		g.setPaint(shape.getShapeColor());
 		g.draw(shape.getPolygon());
 		g.fill(shape.getPolygon());
 		System.out.println("sides drawn: " + shape.sideNumber);
-		//use to test 
-		Double x1, x2, y1, y2, slope;
-		for (int vertex = 1; vertex < this.getIGShape().getVertices().size(); vertex++){
-			x1 =  this.getIGShape().getVertices().get(vertex).getX();
-			x2 =  this.getIGShape().getVertices().get(vertex - 1).getX();
-			y1 =  this.getIGShape().getVertices().get(vertex).getY();
-			y2 =  this.getIGShape().getVertices().get(vertex - 1).getY();
-			slope = (x1 - x2 == 0) ? null : (y1 - y2) / (x1 - x2);
-			if (slope == null) System.out.println("undef");  
-			else System.out.println(slope);
-		}
-		
 	}
 	@Override
 	public String toString(){
@@ -129,9 +117,6 @@ public class ImageGenerator {
 		public void paint(Graphics g){
 			Graphics2D g2D = (Graphics2D) g;
 			g.drawImage(getImage(), 0, 0, this);
-//			g2D.setPaint(shape.getShapeColor());
-//			g2D.fill(shape.getPolygon());
-//			g2D.draw(shape.getPolygon());	
 		}
 	}
 
@@ -206,21 +191,15 @@ public class ImageGenerator {
 			for (int index = 0; index < sideNumber; index++){
 				vertices.add(new Point(center[0] + (int) (radius * Math.cos(Math.toRadians(theta))),
 						center[1] + (int) (radius * Math.sin(Math.toRadians(theta)))));
-//				xPoints[index] = center[0] + (int) (radius * Math.cos(Math.toRadians(theta)));
-//				yPoints[index] = center[1] + (int) (radius * Math.sin(Math.toRadians(theta)));
 				theta += 360 / sideNumber;
 			}
 			//code from: https://docs.oracle.com/javase/tutorial/2d/geometry/arbitrary.html
 			polygon = new GeneralPath(GeneralPath.WIND_EVEN_ODD, xPoints.length);
-//			polygon.moveTo(xPoints[0], yPoints[0]);
 			polygon.moveTo(vertices.get(0).getX(), vertices.get(0).getY());
 			//loop through points, drawing lines between each 
 			for (Point vertex : vertices){
 				 polygon.lineTo(vertex.getX(), vertex.getY());
 			}
-//			for (int index = 1; index < xPoints.length; index++) {
-//		        polygon.lineTo(xPoints[index], yPoints[index]);
-//			}
 			polygon.closePath(); //draw line from final point to first point
 		}
 	}
