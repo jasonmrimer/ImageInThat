@@ -41,7 +41,8 @@ public class FloodMap {
 		//run methods
 		map();				//get all the potential vertices and place into pointList
 		tempVertexList = createTempVertices();	//get guaranteed 4 vertices
-		center = findCenterWithOrthogonalBisectors();		//get center from temp vertices
+		center = new Point(150, 105);
+//		center = findCenterWithOrthogonalBisectors();		//get center from temp vertices
 		radius = createRadius();
 		vertexList = createVertices();		//get all vertices from center 
 		for (Point pt : tempVertexList){
@@ -75,9 +76,9 @@ public class FloodMap {
 		for (int y = 0; y < height; y++){				//rows by height value *This is the Y-Coordinate*
 			for (int x = 0; x < width; x++){			//columns by width *This is the X-Coordinate*
 				if (image.getRGB(x, y) != bgRGB){		//different from bg = shape
-					if ((image.getRGB(x, y - 1) == bgRGB) || (image.getRGB(x, y + 1) == bgRGB)){		//check above/below to see if corner pixel
+//					if ((image.getRGB(x, y - 1) == bgRGB) || (image.getRGB(x, y + 1) == bgRGB)){		//check above/below to see if corner pixel
 						pointList.add(new Point(x, y));	//add point to the list as a potential vertex
-					}
+//					}
 					break;								//found boundary, move to next row
 				}
 			}
@@ -86,9 +87,9 @@ public class FloodMap {
 		for (int y = height - 1; y > -1; y--){			//rows by height value *This is the Y-Coordinate*
 			for (int x = width - 1; x > -1; x--){		//columns by width *This is the X-Coordinate*
 				if (image.getRGB(x, y) != bgRGB) {		//different than background = shape
-					if ((image.getRGB(x, y - 1) == bgRGB) || (image.getRGB(x, y + 1) == bgRGB)) {		//check above/below to see if corner pixel
+//					if ((image.getRGB(x, y - 1) == bgRGB) || (image.getRGB(x, y + 1) == bgRGB)) {		//check above/below to see if corner pixel
 						pointList.add(new Point(x, y)); //add point to the list as a potential vertex
-					}
+//					}
 					break;								//found boundary, move to next row
 				}
 			}
@@ -106,28 +107,28 @@ public class FloodMap {
 	private ArrayList<Point> createTempVertices(){
 		ArrayList<Point> createTempVerticesList = new ArrayList<Point>();
 		//set the values at the minimum value within the image in order to grow the vertices  
-		int leftMostX = Integer.MAX_VALUE, rightMostX = 0, topMostY = Integer.MAX_VALUE, bottomMostY = 0;
+		int leftMostX = Integer.MAX_VALUE, rightMostX = Integer.MIN_VALUE, topMostY = Integer.MAX_VALUE, bottomMostY = Integer.MIN_VALUE;
 		Point tempLeftPoint = new Point(), tempRightPoint = new Point(), tempTopPoint = new Point(), tempBottomPoint = new Point();
 		//find each of the 4 cardinal vertices
 		for (Point pt : pointList){
 			//test left
-			if (pt.getX() < leftMostX) {
+			if (pt.getX() <= leftMostX) {
 				leftMostX = (int) pt.getX();
 				tempLeftPoint = pt;						
 			}
 			//test right
-			if (pt.getX() > rightMostX) {
+			if (pt.getX() >= rightMostX) {
 				rightMostX = (int) pt.getX();
 				tempRightPoint = pt;						
 			}
 			//test bottom
-			if (pt.getY() > bottomMostY) {
+			if (pt.getY() >= bottomMostY) {
 				bottomMostY = (int) pt.getY();
 				tempBottomPoint = pt;						
 			}
 			//test right
-			if (pt.getY() < topMostY) {
-				topMostY = (int) pt.getX();
+			if (pt.getY() <= topMostY) {
+				topMostY = (int) pt.getY();
 				tempTopPoint = pt;						
 			}
 		}
@@ -138,7 +139,7 @@ public class FloodMap {
 		createTempVerticesList.add(tempLeftPoint);
 		createTempVerticesList.add(tempRightPoint);
 		createTempVerticesList.add(tempBottomPoint);
-//		createTempVerticesList.add(tempTopPoint);
+		createTempVerticesList.add(tempTopPoint);
 		return createTempVerticesList;
 	}
 	/*
@@ -208,14 +209,23 @@ public class FloodMap {
 			int x0 = (int) tempVertexList.get(0).getX(), x1 = (int) tempVertexList.get(1).getX(), x2 = (int) tempVertexList.get(2).getX();	//set x values
 			int y0 = (int) tempVertexList.get(0).getY(), y1 = (int) tempVertexList.get(1).getY(), y2 = (int) tempVertexList.get(2).getY();	//set y values
 			double mA = (y0 - y1) / (x0 - x1), mB = (y1 - y2) / (x1 - x2), mC = (y0 - y2) / (x0 - x2);	//set slopes		
-			//change 0 slope to suuuuuuuuuuuper small slope
+			//change 0 slope to suuuuuuuuuuuper small slope to prevent undefined problems when iverse comes around
 			if (mA == 0) mA = 0.0000000000000001;
 			if (mB == 0) mB = 0.0000000000000001;
 			if (mC == 0) mC = 0.0000000000000001;
 			System.out.println(mA + " | " + mB + " | " + mC + " | ");
-			double midAx = (x0 + x1) / 2, midBx = (x1 + x2) / 2, midCx = (x0 + x2) / 2, midAy = (y0 + y1) / 2, midBy = (y1 + y2) / 2, midCy = (y0 + y2) / 2;
-			double wA = -(1 / mA), wB = -(1 / mB), wC = -(1 / mC);										//set inverse slopes
-			double pA = midAy - (wA * midAx), pB = midBy - (wA * midBx), pC = midCy - (wC * midCx);		//set inverse y-intercepts
+			double	midAx = (x0 + x1) / 2,
+					midBx = (x1 + x2) / 2,
+					midCx = (x0 + x2) / 2,		//midpoint x values 
+					midAy = (y0 + y1) / 2, 
+					midBy = (y1 + y2) / 2, 
+					midCy = (y0 + y2) / 2;
+			double	wA = -(1 / mA), 
+					wB = -(1 / mB), 
+					wC = -(1 / mC);				//set inverse slopes
+			double	pA = midAy - (wA * midAx),
+					pB = midBy - (wB * midBx),
+					pC = midCy - (wC * midCx);	//set inverse y-intercepts
 			obX = (int) ((midBy - midAy + (wA * midAx) - (wB * midBx)) / (wA - wB));
 			System.out.println("x = " + obX);
 			obY = (int) ((wC * obX) + midCy - (wC * midCx));
