@@ -45,7 +45,7 @@ public class ImageGenerator {
 		bgColor = getRandomColor(null);
 		colorBackground(bgColor);
 		//draw the shape into the image
-		shape = new IGShape(3, 4);
+		shape = new IGShape(6, 6);
 		Graphics2D g =  (Graphics2D) image.getGraphics();
 		g.setPaint(shape.getShapeColor());
 		g.draw(shape.getPolygon());
@@ -186,7 +186,8 @@ public class ImageGenerator {
 			int xPoints[] = new int[sideNumber];
 			int yPoints[] = new int[sideNumber];
 			int center[] = {(width / 2), (height / 2)};
-			double theta = 0;
+			System.out.print("true center: " + center[0] + "," + center[1]);
+			double theta = 1;
 			//plot the points as if on a circle using the radius from the center of the image 
 			for (int index = 0; index < sideNumber; index++){
 				vertices.add(new Point(center[0] + (int) (radius * Math.cos(Math.toRadians(theta))),
@@ -198,9 +199,15 @@ public class ImageGenerator {
 			polygon.moveTo(vertices.get(0).getX(), vertices.get(0).getY());
 			//loop through points, drawing lines between each 
 			for (Point vertex : vertices){
-				 polygon.lineTo(vertex.getX(), vertex.getY());
+				polygon.lineTo(vertex.getX(), vertex.getY());
 			}
 			polygon.closePath(); //draw line from final point to first point
+		}
+		/*
+		 * calculate the area
+		 */
+		private void getArea(){
+			
 		}
 	}
 }

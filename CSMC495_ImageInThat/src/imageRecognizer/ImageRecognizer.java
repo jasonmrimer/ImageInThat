@@ -5,6 +5,7 @@
 package imageRecognizer;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.geom.Line2D;
@@ -16,6 +17,7 @@ import javax.swing.JPanel;
 public class ImageRecognizer {
 	BufferedImage image;
 	JPanel panel;
+	ArrayList<Point> pointList;
 	Color bgColor, shapeColor, newBGColor;
 	
 	public ImageRecognizer(BufferedImage image){

@@ -9,33 +9,55 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
+import java.util.TreeMap;
 
 
 
 public class FloodMap {
 	//attempt iteration instead of recursion by going line-by line
-	int width, height, bgRGB, shapeRGB;
-	BufferedImage image;
-	ArrayList<Point> pointList;
-	ArrayList<IRLine> sideList;
-	int vertices;
-	Double slope;
-	Stack<Point> points;
+	private int width, height, bgRGB, shapeRGB;
+	private BufferedImage image;
+	private ArrayList<Point> pointList;
+	private ArrayList<Point> tempVertexList;
+	private ArrayList<Point> vertexList;
+	private Point center;
+	private double radius;
+	private double area;
 	
 	public FloodMap(BufferedImage image){
+		//initialize variables
+		this.area = 0.0;
 		this.image = image;
 		this.width = image.getWidth();
 		this.height = image.getHeight();
 		this.bgRGB = image.getRGB(0, 0); //assume top left corner is background since shapes cannot reach
+		this.center = new Point();
 		pointList = new ArrayList<Point>();
-		sideList = new ArrayList<IRLine>();
-		vertices = 0;
-		points = new Stack<Point>();
-		points.push(new Point(0,0));
-		map();
+		tempVertexList = new ArrayList<Point>();
+		vertexList = new ArrayList<Point>();
+		//run methods
+		map();				//get all the potential vertices and place into pointList
+		tempVertexList = createTempVertices();	//get guaranteed 4 vertices
+		center = findCenterWithOrthogonalBisectors();		//get center from temp vertices
+		radius = createRadius();
+		vertexList = createVertices();		//get all vertices from center 
+		for (Point pt : tempVertexList){
+			System.out.println(pt);
+		}
+		System.out.println(center);
 	}
 	
+	private Double createRadius() {
+		//check whether the center exists and there are vertices
+		if (center != null && tempVertexList.size() > 0)
+			return Math.sqrt(Math.pow(tempVertexList.get(0).getX() - center.getX(), 2) + Math.pow(tempVertexList.get(0).getY() - center.getY(), 2));
+		else
+			return null;
+	}
+
 	/*
 	 * map taking advantage of the two-dimension comvex shapes by approaching in a line from the left
 	 * then approaching from the right to capture all the points outlining the shape and skipping the 
@@ -49,165 +71,157 @@ public class FloodMap {
 		 * this pixel is not a corner pixel, disregard it
 		 * also, vertices will mark a change in direction of lines and should have both neighbors (above/below) = background 
 		 */
-		
 		//top to bottom, left to right
-		for (int y = 0; y < height; y++){			//rows by height value *This is the Y-Coordinate*
-			for (int x = 0; x < width; x++){		//columns by width *This is the X-Coordinate*
-				if (image.getRGB(x, y) != bgRGB){	//different from bg = shape
+		for (int y = 0; y < height; y++){				//rows by height value *This is the Y-Coordinate*
+			for (int x = 0; x < width; x++){			//columns by width *This is the X-Coordinate*
+				if (image.getRGB(x, y) != bgRGB){		//different from bg = shape
 					if ((image.getRGB(x, y - 1) == bgRGB) || (image.getRGB(x, y + 1) == bgRGB)){		//check above/below to see if corner pixel
-						checkPoint(x, y);			//process the point onto a side's line object
+						pointList.add(new Point(x, y));	//add point to the list as a potential vertex
 					}
-					break;							//found boundary, move to next row
+					break;								//found boundary, move to next row
 				}
 			}
 		}
 		//top to bottom, right to left
-		for (int y = 0; y < height; y++){			//rows by height value *This is the Y-Coordinate*
-			for (int x = width - 1; x > -1; x--){	//columns by width *This is the X-Coordinate*
-				if (image.getRGB(x, y) != bgRGB) {	//different than background = shape
+		for (int y = height - 1; y > -1; y--){			//rows by height value *This is the Y-Coordinate*
+			for (int x = width - 1; x > -1; x--){		//columns by width *This is the X-Coordinate*
+				if (image.getRGB(x, y) != bgRGB) {		//different than background = shape
 					if ((image.getRGB(x, y - 1) == bgRGB) || (image.getRGB(x, y + 1) == bgRGB)) {		//check above/below to see if corner pixel
-						checkPoint(x, y);			//process the point onto a side's line object
+						pointList.add(new Point(x, y)); //add point to the list as a potential vertex
 					}
-					break;							//found boundary, move to next row
+					break;								//found boundary, move to next row
 				}
-			}
-		}
-	}
-	/*
-	 * process each point through this method that will check whether lines already exist,
-	 * create lines, and call methods to test whether points fall on an existing line
-	 */
-	private void checkPoint(int x, int y){
-		//first, check if there are any sides to test the point against
-		if (sideList.isEmpty()) {				//no sides yet, focus on the first two points
-			if (pointList.size() < 2){			//if there are not enough points to create a line, add the point
-				pointList.add(new Point(x, y));
-				return;
-			}
-			else {								//enough points to make the first line
-				sideList.add(new IRLine(pointList.get(0), pointList.get(1)));
-				pointList.clear();				//remove all points to make way for new side endpoints
-				return;
-			}
-		}
-		else {	//there are line(s) already mapped
-			Point tempPoint = new Point(x, y);
-			//check if the point fits on any line
-			for (IRLine line : sideList){
-				Point removePoint = line.doesExtendLine(tempPoint);	//if the point extends the line it will return the replace endpoint and needs to become a vertex
-				if (removePoint != null) { 								//extends the side, (may need to remove the old vertex inside the method)
-					return;
-				}
-			}
-			//it is not on a line, add it to the point list to create a new line
-			if (pointList.size() < 2){			//if it does not fall on a line, add it to ready a new side object
-				pointList.add(new Point(x, y));
-				return;
-			}
-			else if (pointList.size() == 2){	//enough points to make another line
-				sideList.add(new IRLine(pointList.get(0), pointList.get(1)));
-				pointList.clear();
-				return;
 			}
 		}
 	}
 	
 	public int getSideNumber(){
-		return sideList.size();
+		return vertexList.size();
 	}
 	
-	private class IRLine extends Line2D {
-		double slope, slopeAllowance, yIntercept;	//slope used for line equation, allowance to account for anti-alias
-		Point p1, p2;
-		
-		public IRLine(Point p1, Point p2){
-			this.p1 = p1;
-			this.p2 = p2;
-			this.setLine(p1, p2);
-			slopeAllowance = 0.2;					//slope at % allowance
-			slope = (p1.getX() - p2.getX()) / (p1.getY() - p2.getY());
-			yIntercept = p1.getY() - (slope * p1.getX());
-		}
-		
-		public Point doesExtendLine(Point point){
-			//use line functions to determine if point is on line by creating a fake line with one of the
-			//current endpoints in between the tempPoint 
-			
-			//firstly, is the point between the endpoints and on the line?
-			if (this.contains(point)) {
-				return null;	//break condition - we do not care about the point because it does not extend the line
+	/*
+	 * retrieves the left, right, top, and bottom-most points on the shape
+	 * that must represent four vertices
+	 */
+	private ArrayList<Point> createTempVertices(){
+		ArrayList<Point> createTempVerticesList = new ArrayList<Point>();
+		//set the values at the minimum value within the image in order to grow the vertices  
+		int leftMostX = Integer.MAX_VALUE, rightMostX = 0, topMostY = Integer.MAX_VALUE, bottomMostY = 0;
+		Point tempLeftPoint = new Point(), tempRightPoint = new Point(), tempTopPoint = new Point(), tempBottomPoint = new Point();
+		//find each of the 4 cardinal vertices
+		for (Point pt : pointList){
+			//test left
+			if (pt.getX() < leftMostX) {
+				leftMostX = (int) pt.getX();
+				tempLeftPoint = pt;						
 			}
-			/*
-			 * Use "Rectanlge Theory": substituting the new point with each endpoint to create a line
-			 * will also create bounding rectangles. If the bounding rectangle contains any original endpoint
-			 * then the new point can replace that endpoint as it effectively extends the line.
-			 * All sides should have unique, non-overlapping rectangle bounds for each line (this avoids counting
-			 * a single point for multiple sides).
-			 */
-			IRLine p1ToPoint = new IRLine(p1, point);
-			IRLine p2ToPoint = new IRLine(p2, point);
-			Point temp = new Point();
-			if (p1ToPoint.getBounds2D().contains(p2)){		//new line contains old endpoint; discard old endpoint
-				temp = p2;
-				this.setLine(p1, point);
-				return temp;
+			//test right
+			if (pt.getX() > rightMostX) {
+				rightMostX = (int) pt.getX();
+				tempRightPoint = pt;						
 			}
-			else if (p2ToPoint.getBounds2D().contains(p1)){	//new line contains old endpoint; discard old endpoint
-				temp = p1;
-				this.setLine(point, p2);
-				return temp;
+			//test bottom
+			if (pt.getY() > bottomMostY) {
+				bottomMostY = (int) pt.getY();
+				tempBottomPoint = pt;						
 			}
-			return null;
+			//test right
+			if (pt.getY() < topMostY) {
+				topMostY = (int) pt.getX();
+				tempTopPoint = pt;						
+			}
 		}
-			
-		private Point switchPoints(Point removePoint, Point insertPoint) {
-			Point tempPoint = removePoint;
-			removePoint = insertPoint;
-			return tempPoint;
-		}
-
-		@Override
-		public Rectangle2D getBounds2D() {
-			int x = ((getX1() < getX2()) ? (int) getX1() : (int) getX2()); //one accounts for points lying on the rectangle
-			int y = ((getY1() < getY2()) ? (int) getY1() : (int) getY2());
-			int width = Math.abs((int)(getX1() - getX2()));
-			int height = Math.abs((int)(getY1() - getY2()));
-			return new  Rectangle(new Point(x, y), new Dimension(width, height));
-		}
-		
-		@Override
-		public double getX1() {
-			return p1.getX();
-		}
-		@Override
-		public double getY1() {
-			return p1.getY();
-		}
-		@Override
-		public Point2D getP1() {
-			return this.p1;
-		}
-		@Override
-		public double getX2() {
-			return p2.getX();
-		}
-		@Override
-		public double getY2() {
-			return p2.getY();
-		}
-		@Override
-		public Point2D getP2() {
-			return this.p2;
-		}
-
-		@Override
-		public void setLine(double x1, double y1, double x2, double y2) {
-			p1 = new Point((int) x1, (int) y1);
-			p2 = new Point((int) x2, (int) y2);
-//			this.p1.setLocation(x1, x2);
-//			this.p2.setLocation(x2, y2);
-		}
-		
+		//add vertices to array list
+		/*
+		 * for now, i only care about 3 vertices
+		 */
+		createTempVerticesList.add(tempLeftPoint);
+		createTempVerticesList.add(tempRightPoint);
+		createTempVerticesList.add(tempBottomPoint);
+//		createTempVerticesList.add(tempTopPoint);
+		return createTempVerticesList;
 	}
-
+	/*
+	 * using the radial theory, iterate through all points placing the points farthest from the center in the 
+	 * vertex list
+	 */
+	private ArrayList<Point> createVertices(){
+		ArrayList<Point> createVertexList = new ArrayList<Point>();
+		double  distance = 0.0;
+		HashMap<Point, Double> distanceHash = new HashMap<Point, Double>();
+		for (Point pt : pointList){
+			distance = Math.sqrt(Math.pow(pt.getX() - center.getX(), 2) + Math.pow(pt.getY() - center.getY(), 2));
+			distanceHash.put(pt, distance);
+		}
+		for (Map.Entry<Point, Double> entry : distanceHash.entrySet()){
+//			System.out.println(entry.getValue() + " - " + radius + " = " + (entry.getValue() - radius));
+			if (Double.compare(entry.getValue(), radius) == 0) {
+				createVertexList.add(entry.getKey());
+			}
+		}
+		return createVertexList;
+	}
+	/*
+	 * determine the area from all points
+	 */
+	private void getArea(){
+		Point p1, p2;
+		for (int pt = 0; pt < tempVertexList.size(); pt++){
+			if (pt == tempVertexList.size() - 1){
+				p1 = tempVertexList.get(pt);
+				p2 = tempVertexList.get(0);
+			}
+			else {
+				p1 = tempVertexList.get(pt);
+				p2 = tempVertexList.get(pt + 1);
+			}
+			area += (double) (p1.getX() * p2.getY()) - (double) (p2.getX() * p1.getY());
+		}
+		area *= 0.5;
+	}
+	/*
+	 * get the centeroid using the 
+	 */
+	private Point createCenter(){
+		int x = 0, y = 0;
+		for (Point pt : tempVertexList){
+			x += pt.getX();
+			y += pt.getY();
+		}
+		x /= tempVertexList.size();
+		y /= tempVertexList.size();
+		return new Point((int) x, (int) y);
+	}
+	
+	private Point findCenterWithOrthogonalBisectors(){
+		/*
+		 * alpha represent lines (A = line from 1 to 2) and numeric represent vertex values
+		 * double mA, mB, mC, bA, bB, bC;	//m = slope, b = y-intercept
+		 * double midAx, midAy, midBx, midBy, midCx, midCy;	//midpoints 
+		 * double wA, wB, wC, pA, pB, pC;	//w = inverse slope, p = othor bisector y-intercepts
+		 * int x0, x1, x2, y0, y1, y2;		//use values for readbility throughout code
+		 */
+		int obX = 00, obY = 0;
+		//set all values
+		if (tempVertexList.size() == 3) {
+			//set readability variables
+			int x0 = (int) tempVertexList.get(0).getX(), x1 = (int) tempVertexList.get(1).getX(), x2 = (int) tempVertexList.get(2).getX();	//set x values
+			int y0 = (int) tempVertexList.get(0).getY(), y1 = (int) tempVertexList.get(1).getY(), y2 = (int) tempVertexList.get(2).getY();	//set y values
+			double mA = (y0 - y1) / (x0 - x1), mB = (y1 - y2) / (x1 - x2), mC = (y0 - y2) / (x0 - x2);	//set slopes		
+			//change 0 slope to suuuuuuuuuuuper small slope
+			if (mA == 0) mA = 0.0000000000000001;
+			if (mB == 0) mB = 0.0000000000000001;
+			if (mC == 0) mC = 0.0000000000000001;
+			System.out.println(mA + " | " + mB + " | " + mC + " | ");
+			double midAx = (x0 + x1) / 2, midBx = (x1 + x2) / 2, midCx = (x0 + x2) / 2, midAy = (y0 + y1) / 2, midBy = (y1 + y2) / 2, midCy = (y0 + y2) / 2;
+			double wA = -(1 / mA), wB = -(1 / mB), wC = -(1 / mC);										//set inverse slopes
+			double pA = midAy - (wA * midAx), pB = midBy - (wA * midBx), pC = midCy - (wC * midCx);		//set inverse y-intercepts
+			obX = (int) ((midBy - midAy + (wA * midAx) - (wB * midBx)) / (wA - wB));
+			System.out.println("x = " + obX);
+			obY = (int) ((wC * obX) + midCy - (wC * midCx));
+			System.out.println("y = " + obY);
+		}
+		else System.out.println("Vertex error inside of findCenter...");
+		return new Point(obX, obY);
+	}
 }

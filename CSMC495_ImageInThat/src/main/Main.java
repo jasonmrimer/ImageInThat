@@ -22,7 +22,7 @@ public class Main { //extends JPanel {
 	public static void main(String arg[]){
 		//John's side
 		//Open memory load
-		Driver driver = new Driver();
+//		Driver driver = new Driver();
 		
 		ImageGenerator ig = new ImageGenerator(300, 300);
 		ImageRecognizer ir = new ImageRecognizer(ig.getImage());
@@ -31,12 +31,12 @@ public class Main { //extends JPanel {
 //		ig.getIGPanel();	//John, use this to get the panel and put in your GUI
 		
 //		System.exit(0);
-		//Jason's side
-		//frame
-		JFrame frame = new JFrame();
-		frame.getContentPane().add(ig.getIGPanel());
-		frame.setSize(400, 400);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
+//		//Jason's side
+//		//frame
+//		JFrame frame = new JFrame();
+//		frame.getContentPane().add(ig.getIGPanel());
+//		frame.setSize(400, 400);
+//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//		frame.setVisible(true);
 	}
 }
