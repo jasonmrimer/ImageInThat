@@ -23,9 +23,10 @@ public class Main { //extends JPanel {
 		//John's side
 		//Open memory load
 //		Driver driver = new Driver();
-		
-		ImageGenerator ig = new ImageGenerator(300, 300);
-		ImageRecognizer ir = new ImageRecognizer(ig.getImage());
+		for (int sides = 3; sides < 15; sides++){
+			ImageGenerator ig = new ImageGenerator(800, 800, sides, sides);
+			ImageRecognizer ir = new ImageRecognizer(ig.getImage());
+		}
 
 //		ig.getIGShape().getSideNmber()();	//John, use this to get the number of sides 
 //		ig.getIGPanel();	//John, use this to get the panel and put in your GUI

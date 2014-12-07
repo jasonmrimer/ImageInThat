@@ -51,7 +51,26 @@ public class ImageGenerator {
 		g.draw(shape.getPolygon());
 		g.fill(shape.getPolygon());
 		System.out.println("IG sides drawn: " + shape.sideNumber);
-		System.out.println("IG radius: " + shape.radius);
+//		System.out.println("IG radius: " + shape.radius);
+	}
+	public ImageGenerator(int width, int height, int minSides, int maxSide){
+		//set variables
+		this.width = width;
+		this.height = height;
+		//create image
+		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		igPanel = new IGPanel();
+		//colors
+		bgColor = getRandomColor(null);
+		colorBackground(bgColor);
+		//draw the shape into the image
+		shape = new IGShape(minSides, maxSide);
+		Graphics2D g =  (Graphics2D) image.getGraphics();
+		g.setPaint(shape.getShapeColor());
+		g.draw(shape.getPolygon());
+		g.fill(shape.getPolygon());
+		System.out.println("IG sides drawn: " + shape.sideNumber);
+//		System.out.println("IG radius: " + shape.radius);
 	}
 	@Override
 	public String toString(){
@@ -187,7 +206,7 @@ public class ImageGenerator {
 			int xPoints[] = new int[sideNumber];
 			int yPoints[] = new int[sideNumber];
 			int center[] = {(width / 2), (height / 2)};
-			System.out.println("true center: " + center[0] + "," + center[1]);
+//			System.out.println("true center: " + center[0] + "," + center[1]);
 			double theta = 1;
 			//plot the points as if on a circle using the radius from the center of the image 
 			for (int index = 0; index < sideNumber; index++){
@@ -203,10 +222,10 @@ public class ImageGenerator {
 				polygon.lineTo(vertex.getX(), vertex.getY());
 			}
 			polygon.closePath(); //draw line from final point to first point
-			for (Point pt : vertices){
-				System.out.println("V " + pt);
-				System.out.println("r = " + Math.sqrt(Math.pow(pt.getX() - center[0], 2) + Math.pow(pt.getY() - center[1], 2)));
-			}
+//			for (Point pt : vertices){
+//				System.out.println("V " + pt);
+//				System.out.println("r = " + Math.sqrt(Math.pow(pt.getX() - center[0], 2) + Math.pow(pt.getY() - center[1], 2)));
+//			}
 		}
 		/*
 		 * calculate the area

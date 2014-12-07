@@ -45,11 +45,11 @@ public class FloodMap {
 //		center = findCenterWithOrthogonalBisectors();		//get center from temp vertices
 		radius = createRadius();
 		vertexList = createVertices();		//get all vertices from center 
-		for (Point pt : tempVertexList){
-			System.out.println(pt);
-		}
-		System.out.println(center);
-		System.out.println("IR radius: " + radius);
+//		for (Point pt : tempVertexList){
+//			System.out.println(pt);
+//		}
+//		System.out.println(center);
+//		System.out.println("IR radius: " + radius);
 	}
 	
 	private double createRadius() {
@@ -164,7 +164,7 @@ public class FloodMap {
 		}
 		for (Map.Entry<Point, Double> entry : distanceHash.entrySet()){
 //			System.out.println(entry.getValue() + " - " + radius + " = " + (entry.getValue() - radius));
-			if (entry.getValue() >= 0.9999999999999999 * radius) {
+			if (entry.getValue() >= 0.9995 * radius) {
 				createVertexList.add(entry.getKey());
 			}
 		}
@@ -221,7 +221,6 @@ public class FloodMap {
 			if (mA == 0) mA = 0.0000000000000001;
 			if (mB == 0) mB = 0.0000000000000001;
 			if (mC == 0) mC = 0.0000000000000001;
-			System.out.println(mA + " | " + mB + " | " + mC + " | ");
 			double	midAx = (x0 + x1) / 2,
 					midBx = (x1 + x2) / 2,
 					midCx = (x0 + x2) / 2,		//midpoint x values 
@@ -235,9 +234,7 @@ public class FloodMap {
 					pB = midBy - (wB * midBx),
 					pC = midCy - (wC * midCx);	//set inverse y-intercepts
 			obX = (int) ((midBy - midAy + (wA * midAx) - (wB * midBx)) / (wA - wB));
-			System.out.println("x = " + obX);
 			obY = (int) ((wC * obX) + midCy - (wC * midCx));
-			System.out.println("y = " + obY);
 		}
 		else System.out.println("Vertex error inside of findCenter...");
 		return new Point(obX, obY);
