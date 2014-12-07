@@ -10,7 +10,9 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.PathIterator;
 import java.awt.image.*;
 import java.util.ArrayList;
 import java.util.Random;
@@ -45,7 +47,7 @@ public class ImageGenerator {
 		bgColor = getRandomColor(null);
 		colorBackground(bgColor);
 		//draw the shape into the image
-		shape = new IGShape(6, 6);
+		shape = new IGShape(7, 7);
 		Graphics2D g =  (Graphics2D) image.getGraphics();
 		g.setPaint(shape.getShapeColor());
 		g.draw(shape.getPolygon());
@@ -131,7 +133,7 @@ public class ImageGenerator {
 		ArrayList<Point> vertices;
 		int sideNumber, minSides, maxSides, radius; //min/maxSides indicate the side limit parameters 
 		Color shapeColor;
-		float interiorAngle, sideLength;
+		double interiorAngle, sideLength;
 		GeneralPath polygon;
 		
 		public IGShape(){
@@ -170,7 +172,7 @@ public class ImageGenerator {
 			//calculate number of sides
 			Random random = new Random();
 			sideNumber = random.nextInt(maxSides - minSides + 1) + minSides;
-			interiorAngle = 360 / sideNumber;
+			interiorAngle = 360.0 / sideNumber;
 		}
 		//this is the sidelength to use later; the radius is more important as IG uses it to place vertices
 		private void setSideLength(){
@@ -188,12 +190,12 @@ public class ImageGenerator {
 			int yPoints[] = new int[sideNumber];
 			int center[] = {(width / 2), (height / 2)};
 			System.out.println("true center: " + center[0] + "," + center[1]);
-			double theta = 1;
+			double theta = 1.0;
 			//plot the points as if on a circle using the radius from the center of the image 
 			for (int index = 0; index < sideNumber; index++){
 				vertices.add(new Point(center[0] + (int) (radius * Math.cos(Math.toRadians(theta))),
 						center[1] + (int) (radius * Math.sin(Math.toRadians(theta)))));
-				theta += (double) 360 / sideNumber;
+				theta += (double) 360.0 / sideNumber;
 			}
 			//code from: https://docs.oracle.com/javase/tutorial/2d/geometry/arbitrary.html
 			polygon = new GeneralPath(GeneralPath.WIND_EVEN_ODD, xPoints.length);

@@ -2,9 +2,13 @@ package imageRecognizer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.awt.geom.Line2D;
+import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -13,6 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 import java.util.TreeMap;
+
+import javax.swing.text.Segment;
 
 
 
@@ -50,6 +56,7 @@ public class FloodMap {
 		}
 		System.out.println(center);
 		System.out.println("IR radius: " + radius);
+		testPolygon();
 	}
 	
 	private double createRadius() {
@@ -242,4 +249,104 @@ public class FloodMap {
 		else System.out.println("Vertex error inside of findCenter...");
 		return new Point(obX, obY);
 	}
+	/*
+	 * attemp using the Polygon class in order to iterate across lines with built in functions
+	 */
+	private void testPolygon(){
+		int[] x = new int[pointList.size()], y = new int[pointList.size()];
+		for (int point = 0; point < pointList.size(); point++) {
+			x[point] = (int) pointList.get(point).getX();
+			y[point] = (int) pointList.get(point).getY();
+		}
+		Polygon polygon = new Polygon(x, y, pointList.size());
+		PathIterator pathIt = polygon.getPathIterator(new AffineTransform());
+		pathIt.next();
+		System.out.println("poly points " + polygon.npoints);
+		/*
+		 * code from: http://stackoverflow.com/questions/8144156/using-pathiterator-to-return-all-line-segments-that-constrain-an-area
+		 */
+//		Area area; // The value is set elsewhere in the code   
+		Area area = new Area(polygon);
+		ArrayList<double[]> areaPoints = new ArrayList<double[]>();
+		ArrayList<Line2D.Double> areaSegments = new ArrayList<Line2D.Double>();
+		double[] coords = new double[6];
+
+		for (PathIterator pi = area.getPathIterator(null); !pi.isDone(); pi.next()) {
+		    // The type will be SEG_LINETO, SEG_MOVETO, or SEG_CLOSE
+		    // Because the Area is composed of straight lines
+		    int type = pi.currentSegment(coords);
+		    // We record a double array of {segment type, x coord, y coord}
+		    double[] pathIteratorCoords = {type, coords[0], coords[1]};
+		    areaPoints.add(pathIteratorCoords);
+		}
+
+		double[] start = new double[3]; // To record where each polygon starts
+
+		for (int i = 0; i < areaPoints.size(); i++) {
+		    // If we're not on the last point, return a line from this point to the next
+		    double[] currentElement = areaPoints.get(i);
+
+		    // We need a default value in case we've reached the end of the ArrayList
+		    double[] nextElement = {-1, -1, -1};
+		    if (i < areaPoints.size() - 1) {
+		        nextElement = areaPoints.get(i + 1);
+		    }
+
+		    // Make the lines
+		    if (currentElement[0] == PathIterator.SEG_MOVETO) {
+		        start = currentElement; // Record where the polygon started to close it later
+		    } 
+
+		    if (nextElement[0] == PathIterator.SEG_LINETO) {
+		        areaSegments.add(
+		                new Line2D.Double(
+		                    currentElement[1], currentElement[2],
+		                    nextElement[1], nextElement[2]
+		                )
+		            );
+		    } else if (nextElement[0] == PathIterator.SEG_CLOSE) {
+		        areaSegments.add(
+		                new Line2D.Double(
+		                    currentElement[1], currentElement[2],
+		                    start[1], start[2]
+		                )
+		            );
+		    }
+		}
+
+		// areaSegments now contains all the line segments
+		System.out.println("aS = " + areaSegments.size());
+		System.out.println("isPolygonal " + area.isPolygonal());
+		PathIterator pi = area.getPathIterator(null);
+		while (pi.isDone() == false) {
+		      describeCurrentSegment(pi);
+		      pi.next();
+	    }
+	}
+	//code from: http://www.java2s.com/Code/JavaAPI/java.awt.geom/PathIteratorcurrentSegmentdoublecoords.htm
+	public void describeCurrentSegment(PathIterator pi) {
+	    double[] coordinates = new double[6];
+	    int type = pi.currentSegment(coordinates);
+	    switch (type) {
+	    case PathIterator.SEG_MOVETO:
+	      System.out.println("move to " + coordinates[0] + ", " + coordinates[1]);
+	      break;
+	    case PathIterator.SEG_LINETO:
+	      System.out.println("line to " + coordinates[0] + ", " + coordinates[1]);
+	      break;
+	    case PathIterator.SEG_QUADTO:
+	      System.out.println("quadratic to " + coordinates[0] + ", " + coordinates[1] + ", "
+	          + coordinates[2] + ", " + coordinates[3]);
+	      break;
+	    case PathIterator.SEG_CUBICTO:
+	      System.out.println("cubic to " + coordinates[0] + ", " + coordinates[1] + ", "
+	          + coordinates[2] + ", " + coordinates[3] + ", " + coordinates[4] + ", " + coordinates[5]);
+	      break;
+	    case PathIterator.SEG_CLOSE:
+	      System.out.println("close");
+	      break;
+	    default:
+	      break;
+	    }
+	  }
 }
