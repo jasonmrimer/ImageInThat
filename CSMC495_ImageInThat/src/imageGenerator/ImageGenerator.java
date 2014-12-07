@@ -50,8 +50,6 @@ public class ImageGenerator {
 		g.setPaint(shape.getShapeColor());
 		g.draw(shape.getPolygon());
 		g.fill(shape.getPolygon());
-		System.out.println("IG sides drawn: " + shape.sideNumber);
-//		System.out.println("IG radius: " + shape.radius);
 	}
 	public ImageGenerator(int width, int height, int minSides, int maxSide){
 		//set variables
@@ -69,8 +67,6 @@ public class ImageGenerator {
 		g.setPaint(shape.getShapeColor());
 		g.draw(shape.getPolygon());
 		g.fill(shape.getPolygon());
-		System.out.println("IG sides drawn: " + shape.sideNumber);
-//		System.out.println("IG radius: " + shape.radius);
 	}
 	@Override
 	public String toString(){
@@ -135,12 +131,9 @@ public class ImageGenerator {
 	private class IGPanel extends JPanel{
 		//use the paint method to draw the image and polygon
 		public void paint(Graphics g){
-			Graphics2D g2D = (Graphics2D) g;
 			g.drawImage(getImage(), 0, 0, this);
 		}
 	}
-
-	
 	/*
 	 * IGShape is a sbuclass that maintains the characteristics of a shape such as its number of sides.
 	 * This will be useful during extensions to write that information to testing files to verify correct
@@ -168,6 +161,10 @@ public class ImageGenerator {
 			shapeColor = getRandomColor(bgColor);
 			setSides();
 			createPolygon();
+		}
+		//return number of sides
+		public int getNumberOfSides(){
+			return vertices.size();
 		}
 		//return shape color in order to paint it
 		public Color getShapeColor(){
@@ -222,16 +219,6 @@ public class ImageGenerator {
 				polygon.lineTo(vertex.getX(), vertex.getY());
 			}
 			polygon.closePath(); //draw line from final point to first point
-//			for (Point pt : vertices){
-//				System.out.println("V " + pt);
-//				System.out.println("r = " + Math.sqrt(Math.pow(pt.getX() - center[0], 2) + Math.pow(pt.getY() - center[1], 2)));
-//			}
-		}
-		/*
-		 * calculate the area
-		 */
-		private void getArea(){
-			
 		}
 	}
 }

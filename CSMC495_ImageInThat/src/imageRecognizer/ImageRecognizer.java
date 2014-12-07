@@ -15,32 +15,19 @@ import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
 public class ImageRecognizer {
+	//variables
 	BufferedImage image;
 	JPanel panel;
-	ArrayList<Point> pointList;
 	Color bgColor, shapeColor, newBGColor;
-	
+	FloodMap fm;
+	//constructor
 	public ImageRecognizer(BufferedImage image){
 		this.image = image;
 		bgColor = new Color(image.getRGB(0, 0)); //assume the top left pixel is the background since the shape never reaches the corner
-		FloodMap fm = new FloodMap(image);
-		System.out.println("sides mapped: " + fm.getSideNumber());
+		fm = new FloodMap(image);
 	}	
-	
-	
-	
-	/*
-	 * IRShape will contain the information relating to the shape being mapped
-	 * by IR. It will have an dynamic number of sides and will hold all the information will
-	 * IR maps.
-	 */
-	private class IRShape{
-		ArrayList<Line2D> sides;
-		int sideNumber, radius; //min/maxSides indicate the side limit parameters 
-		Color shapeColor;
-		float interiorAngle, sideLength;
-		IRShape(){
-			sides = new ArrayList<Line2D>();
-		}
+	//return number of sides mapped in floodmap
+	public int getNumberOfSidesMapped(){
+		return fm.getSideNumber();
 	}
 }

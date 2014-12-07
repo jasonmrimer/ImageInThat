@@ -23,21 +23,25 @@ public class Main { //extends JPanel {
 		//John's side
 		//Open memory load
 //		Driver driver = new Driver();
-		for (int sides = 3; sides < 15; sides++){
-			ImageGenerator ig = new ImageGenerator(800, 800, sides, sides);
-			ImageRecognizer ir = new ImageRecognizer(ig.getImage());
-		}
-
 //		ig.getIGShape().getSideNmber()();	//John, use this to get the number of sides 
 //		ig.getIGPanel();	//John, use this to get the panel and put in your GUI
 		
-//		System.exit(0);
+
+		
 //		//Jason's side
 //		//frame
 //		JFrame frame = new JFrame();
 //		frame.getContentPane().add(ig.getIGPanel());
-//		frame.setSize(400, 400);
+//		frame.setSize(800, 800);
 //		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //		frame.setVisible(true);
+		//test side values and accuracy
+		for (int sides = 3; sides < 7; sides++){
+			ImageGenerator ig = new ImageGenerator(800, 800, sides, sides);
+			ImageRecognizer ir = new ImageRecognizer(ig.getImage());
+			System.out.println("Sides created in IG:	" + ig.getIGShape().getNumberOfSides());
+			System.out.println("Sides mapped in IR:	" + ir.getNumberOfSidesMapped());
+		}
+		System.exit(0);
 	}
 }
