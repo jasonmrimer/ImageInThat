@@ -41,7 +41,7 @@ public class FloodMap {
 		//run methods
 		map();				//get all the potential vertices and place into pointList
 		tempVertexList = createTempVertices();	//get guaranteed 4 vertices
-		center = new Point(150, 105);
+		center = new Point(image.getWidth() / 2, image.getHeight() / 2);
 //		center = findCenterWithOrthogonalBisectors();		//get center from temp vertices
 		radius = createRadius();
 		vertexList = createVertices();		//get all vertices from center 
@@ -49,14 +49,22 @@ public class FloodMap {
 			System.out.println(pt);
 		}
 		System.out.println(center);
+		System.out.println("IR radius: " + radius);
 	}
 	
-	private Double createRadius() {
+	private double createRadius() {
 		//check whether the center exists and there are vertices
-		if (center != null && tempVertexList.size() > 0)
+		double createRadius = 0.0;
+		if (center != null && tempVertexList.size() > 0) {
+			for(Point pt : pointList) {
+				if (Math.sqrt(Math.pow(pt.getX() - center.getX(), 2) + Math.pow(pt.getY() - center.getY(), 2)) > createRadius){
+					createRadius = Math.sqrt(Math.pow(pt.getX() - center.getX(), 2) + Math.pow(pt.getY() - center.getY(), 2));
+				}
+			}
 			return Math.sqrt(Math.pow(tempVertexList.get(0).getX() - center.getX(), 2) + Math.pow(tempVertexList.get(0).getY() - center.getY(), 2));
+		}
 		else
-			return null;
+			return (Double) null;
 	}
 
 	/*
@@ -156,7 +164,7 @@ public class FloodMap {
 		}
 		for (Map.Entry<Point, Double> entry : distanceHash.entrySet()){
 //			System.out.println(entry.getValue() + " - " + radius + " = " + (entry.getValue() - radius));
-			if (Double.compare(entry.getValue(), radius) == 0) {
+			if (entry.getValue() >= 0.9999999999999999 * radius) {
 				createVertexList.add(entry.getKey());
 			}
 		}
