@@ -45,12 +45,13 @@ public class ImageGenerator {
 		bgColor = getRandomColor(null);
 		colorBackground(bgColor);
 		//draw the shape into the image
-		shape = new IGShape(7, 7);
+		shape = new IGShape(6, 6);
 		Graphics2D g =  (Graphics2D) image.getGraphics();
 		g.setPaint(shape.getShapeColor());
 		g.draw(shape.getPolygon());
 		g.fill(shape.getPolygon());
-		System.out.println("sides drawn: " + shape.sideNumber);
+		System.out.println("IG sides drawn: " + shape.sideNumber);
+		System.out.println("IG radius: " + shape.radius);
 	}
 	@Override
 	public String toString(){
@@ -192,7 +193,7 @@ public class ImageGenerator {
 			for (int index = 0; index < sideNumber; index++){
 				vertices.add(new Point(center[0] + (int) (radius * Math.cos(Math.toRadians(theta))),
 						center[1] + (int) (radius * Math.sin(Math.toRadians(theta)))));
-				theta += 360 / sideNumber;
+				theta += (double) 360 / sideNumber;
 			}
 			//code from: https://docs.oracle.com/javase/tutorial/2d/geometry/arbitrary.html
 			polygon = new GeneralPath(GeneralPath.WIND_EVEN_ODD, xPoints.length);
@@ -204,6 +205,7 @@ public class ImageGenerator {
 			polygon.closePath(); //draw line from final point to first point
 			for (Point pt : vertices){
 				System.out.println("V " + pt);
+				System.out.println("r = " + Math.sqrt(Math.pow(pt.getX() - center[0], 2) + Math.pow(pt.getY() - center[1], 2)));
 			}
 		}
 		/*
