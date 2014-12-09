@@ -53,7 +53,7 @@ public class ImageGenerator {
 		Graphics2D g =  (Graphics2D) image.getGraphics();
 		g.setPaint(shape.getShapeColor());
 		g.draw(shape.getPolygon());
-		g.fill(shape.getPolygon());
+//		g.fill(shape.getPolygon());
 	}
 	public ImageGenerator(int width, int height, int minSides, int maxSide){
 		//set variables
@@ -70,7 +70,7 @@ public class ImageGenerator {
 		Graphics2D g =  (Graphics2D) image.getGraphics();
 		g.setPaint(shape.getShapeColor());
 		g.draw(shape.getPolygon());
-		g.fill(shape.getPolygon());
+//		g.fill(shape.getPolygon());
 		shape.testArea();
 	}
 	@Override

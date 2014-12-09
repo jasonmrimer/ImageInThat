@@ -25,7 +25,6 @@ public class ImageRecognizer {
 	//variables
 	JPanel panel;
 	Color bgColor, shapeColor, newBGColor;
-	FloodMap fm;
 	//attempt iteration instead of recursion by going line-by line
 	private int width, height, bgRGB, shapeRGB;
 	private BufferedImage image;
@@ -56,8 +55,8 @@ public class ImageRecognizer {
 	private void test() {
 		//test path iterators
 		Line2D line;
+		line = new Line2D.Double(new Point(-10, -10), new Point(-100, -100));
 		line = new Line2D() {
-			
 			@Override
 			public Rectangle2D getBounds2D() {
 				// TODO Auto-generated method stub
