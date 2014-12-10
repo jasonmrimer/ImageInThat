@@ -28,21 +28,21 @@ public class Main { //extends JPanel {
 		
 
 		
-//		//Jason's side
+		//Jason's side
 		//frame
-		JFrame frame = new JFrame();
-		ImageGenerator ig = new ImageGenerator(800, 800, 5, 5);
-		frame.getContentPane().add(ig.getIGPanel());
-		frame.setSize(800, 800);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
+//		JFrame frame = new JFrame();
+//		ImageGenerator ig = new ImageGenerator(800, 800, 5, 5);
+//		frame.getContentPane().add(ig.getIGPanel());
+//		frame.setSize(800, 800);
+//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//		frame.setVisible(true);
 		//test side values and accuracy
-//		for (int sides = 3; sides < 7; sides++){
-//			ImageGenerator ig = new ImageGenerator(800, 800, sides, sides);
-//			ImageRecognizer ir = new ImageRecognizer(ig.getImage());
-//			System.out.println("Sides created in IG:	" + ig.getIGShape().getNumberOfSides());
-//			System.out.println("Sides mapped in IR:	" + ir.getNumberOfSidesMapped());
-//		}
-//		System.exit(0);
+		for (int sides = 3; sides < 7; sides++){
+			ImageGenerator ig = new ImageGenerator(800, 800, sides, sides);
+			ImageRecognizer ir = new ImageRecognizer(ig.getImage());
+			System.out.println("Sides created in IG:	" + ig.getIGShape().getNumberOfSides());
+			System.out.println("Sides mapped in IR:	" + ir.getNumberOfSidesMapped());
+		}
+		System.exit(0);
 	}
 }

@@ -30,30 +30,10 @@ public class ImageGenerator {
 	IGPanel igPanel;
 	//constructors
 	public ImageGenerator(){
-		height = 100;
-		width = 100;
-		igPanel = new IGPanel();
-		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		bgColor = getRandomColor(null);
-		colorBackground(bgColor);
-		shape = new IGShape(4, 4);
+		this(100, 100, 3, 5);
 	}
 	public ImageGenerator(int width, int height){
-		//set variables
-		this.width = width;
-		this.height = height;
-		//create image
-		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		igPanel = new IGPanel();
-		//colors
-		bgColor = getRandomColor(null);
-		colorBackground(bgColor);
-		//draw the shape into the image
-		shape = new IGShape(6, 6);
-		Graphics2D g =  (Graphics2D) image.getGraphics();
-		g.setPaint(shape.getShapeColor());
-		g.draw(shape.getPolygon());
-//		g.fill(shape.getPolygon());
+		this(width, height, 3, 5);
 	}
 	public ImageGenerator(int width, int height, int minSides, int maxSide){
 		//set variables

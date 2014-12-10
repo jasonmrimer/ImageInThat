@@ -9,6 +9,7 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.awt.geom.Area;
@@ -49,65 +50,9 @@ public class ImageRecognizer {
 		map();							//get all the potential vertices and place into pointList
 		radius = createRadius(center, pointList);
 		vertexList = createVertices(pointList);	//get all vertices from center 
-		test();
 		testArea();
+		intersect();
 	}	
-	private void test() {
-		//test path iterators
-		Line2D line;
-		line = new Line2D.Double(new Point(-10, -10), new Point(-100, -100));
-		line = new Line2D() {
-			@Override
-			public Rectangle2D getBounds2D() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-			
-			@Override
-			public void setLine(double x1, double y1, double x2, double y2) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public double getY2() {
-				// TODO Auto-generated method stub
-				return 0;
-			}
-			
-			@Override
-			public double getY1() {
-				// TODO Auto-generated method stub
-				return 0;
-			}
-			
-			@Override
-			public double getX2() {
-				// TODO Auto-generated method stub
-				return 0;
-			}
-			
-			@Override
-			public double getX1() {
-				// TODO Auto-generated method stub
-				return 0;
-			}
-			
-			@Override
-			public Point2D getP2() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-			
-			@Override
-			public Point2D getP1() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-		};
-		
-		
-	}
 	//return number of sides mapped by IR
 	public int getNumberOfSidesMapped(){
 		return vertexList.size();
@@ -243,5 +188,52 @@ public class ImageRecognizer {
 		
 		// areaSegments now contains all the line segments
 		System.out.println("segs: " + areaSegments.size());
+	}
+	/*
+	 * Intersect uses an empty polygon (only colored boundary) then iterates
+	 * through each point in the polygon to make rays from a point on the polygon to a
+	 * recursive point rotated based on result that hones in on whether the point is a vertex.
+	 * If it intersects once then the ray does not yet contain the vertex
+	 * If it intersects zero times then the ray does not yet contain the vertex
+	 * If it intersect 2+ times then it overlaps a side
+	 * 	follow that side until it is a vertex
+	 */
+	public void intersect(){
+		double maxTheta = (3600 * (3601 / 2)) - (11 * (12 / 2)) / 10;
+		System.out.println("sum1: " + maxTheta);
+		Line2D.Double testLine = new Line2D.Double(0.0, 0.0, 10.0, 10.0);
+        //from: http://stackoverflow.com/questions/6339328/iterate-through-each-point-on-a-line-path-in-java
+		List<Point2D> ary = new ArrayList<Point2D>();
+        Line2D line = new Line2D.Double(0, 0, 10, 10);
+        Point2D current;
+        for(Iterator<Point2D> iter = new LineIterator(line); iter.hasNext();) {
+            current =iter.next();
+            System.out.println(current);
+            ary.add(current);
+        }
+//		Line2D line = new Line2D.Double();
+		int[] xPoints = new int[pointList.size()];
+		int[] yPoints = new int[pointList.size()];
+		Polygon polygon = new Polygon();
+		for (int point = 0; point < pointList.size(); point++){
+			polygon.addPoint((int) pointList.get(point).getX(), (int) pointList.get(point).getY());
+
+			xPoints[point] = (int) pointList.get(point).getX();
+			yPoints[point] = (int) pointList.get(point).getY();
+		}
+		
+		
+		
+	}
+	public Line2D interesectingRay(Point startPt, int intersections, int radius, double previousTheta, double thetaSum, double maxTheta){
+		Line2D ray = new Line2D.Double();
+		
+		//base case return if it is on the path or 
+		
+		//starts inside the polygon
+		
+//		vertices.add(new Point(center[0] + (int) (radius * Math.cos(Math.toRadians(theta))),
+//				center[1] + (int) (radius * Math.sin(Math.toRadians(theta)))));
+		return ray;
 	}
 }
