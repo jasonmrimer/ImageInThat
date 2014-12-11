@@ -213,8 +213,6 @@ public class ImageRecognizer {
 //            ary.add(current);
 //        }
 //		Line2D line = new Line2D.Double();
-		int[] xPoints = new int[pointList.size()];
-		int[] yPoints = new int[pointList.size()];
 		int maxRadius = (image.getWidth() > image.getHeight()) ? image.getWidth() : image.getHeight();
 		Polygon polygon = new Polygon();
 		Line2D currentSide = new Line2D.Double();
@@ -226,8 +224,17 @@ public class ImageRecognizer {
 			
 			if (currentSide != null){
 				System.out.println("found: " + currentSide.getP1() + ", " + currentSide.getP2()); //print vertices for testing
-				point = pointList.indexOf(new Point((int) currentSide.getP2().getX(),(int) currentSide.getP2().getY())) - 1;
-				point = (point > 1) ? point : pointList.size() - 1;
+				Point pt1 = (Point) currentSide.getP1();
+				Point pt2 = (Point) currentSide.getP2();
+				if (pt1.equals(pointList.get(point))) {
+					point = pointList.indexOf(new Point((int) currentSide.getP2().getX(),(int) currentSide.getP2().getY())) - 1;
+				}
+				else {
+					point = pointList.indexOf(new Point((int) currentSide.getP1().getX(),(int) currentSide.getP1().getY())) - 1;
+				}
+				System.out.println(point);
+				point = (point > 0) ? point : pointList.size();
+				System.out.println(point);
 				currentSide = null;
 				//set point = to the end point to skip points in the middle
 				sides++;
@@ -263,7 +270,7 @@ public class ImageRecognizer {
 		} //we should not receive an else because that means the last ray should have overlapped the line and not thrown a direction number or recursed
 		
 		//a base case, theta change is so small we will never achieve match so return
-		if (thetaDelta < 0.1) return null;
+		if (thetaDelta < 1) return null;
 		
 		Point2D endPoint = new Point2D.Double((startPt.getX() + (radius * Math.cos(Math.toRadians(theta)))),
 				(startPt.getY() + (radius * Math.sin(Math.toRadians(theta)))));
@@ -287,7 +294,7 @@ public class ImageRecognizer {
 			}
         }		
 		//base case return if it is on the path or 
-		if (intersections > 20){	//is a side
+		if (intersections > 10){	//is a side
 			return side;
 		}
 		else {
