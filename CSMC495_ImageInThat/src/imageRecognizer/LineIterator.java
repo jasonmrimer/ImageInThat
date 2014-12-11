@@ -12,6 +12,8 @@ import org.junit.Test;
  * Bresenham's algorithm to find all pixels on a Line2D.
  * @author nes
  * from: https://snipt.net/nikoschwarz/iterate-all-points-on-a-line-using-bresenhams-algorithm/
+ *         //from: http://stackoverflow.com/questions/6339328/iterate-through-each-point-on-a-line-path-in-java
+
  */
 
 public class LineIterator implements Iterator<Point2D> {

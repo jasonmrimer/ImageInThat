@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.awt.geom.Area;
 import java.awt.geom.Line2D;
 import java.awt.geom.PathIterator;
@@ -30,16 +31,16 @@ public class ImageRecognizer {
 	//attempt iteration instead of recursion by going line-by line
 	private int width, height, bgRGB, shapeRGB;
 	private BufferedImage image;
-	private ArrayList<Point> pointList;
-	private ArrayList<Point> tempVertexList;
-	private ArrayList<Point> vertexList;
+	private ArrayList<Point2D> pointList;
+	private ArrayList<Point2D> tempVertexList;
+	private ArrayList<Point2D> vertexList;
 	private Point center;
 	private double radius;
 	//constructor
 	public ImageRecognizer(BufferedImage image){
 		//initialize variables
-		pointList = new ArrayList<Point>();
-		vertexList = new ArrayList<Point>();
+		pointList = new ArrayList<Point2D>();
+		vertexList = new ArrayList<Point2D>();
 		//set variables
 		this.image = image;
 		bgColor = new Color(image.getRGB(0, 0)); //assume the top left pixel is the background since the shape never reaches the corner
@@ -59,11 +60,11 @@ public class ImageRecognizer {
 		return vertexList.size();
 	}
 	//find the farthest point from center - that distance = radius
-	private double createRadius(Point center, ArrayList<Point> pointList) {
+	private double createRadius(Point center, ArrayList<Point2D> pointList2) {
 		//check whether the center exists and there are vertices
 		double createRadius = 0.0;
 		if (center != null) {
-			for(Point pt : pointList) {
+			for(Point2D pt : pointList2) {
 				if (Math.sqrt(Math.pow(pt.getX() - center.getX(), 2) + Math.pow(pt.getY() - center.getY(), 2)) > createRadius){
 					createRadius = Math.sqrt(Math.pow(pt.getX() - center.getX(), 2) + Math.pow(pt.getY() - center.getY(), 2));
 				}
@@ -110,18 +111,18 @@ public class ImageRecognizer {
 	 * using the radial theory, iterate through all points placing the points farthest from the center in the 
 	 * vertex list
 	 */
-	private ArrayList<Point> createVertices(ArrayList<Point> pointList){
-		ArrayList<Point> createVertexList = new ArrayList<Point>();
+	private ArrayList<Point2D> createVertices(ArrayList<Point2D> pointList2){
+		ArrayList<Point2D> createVertexList = new ArrayList<Point2D>();
 		double  distance = 0.0;
-		HashMap<Point, Double> distanceHash = new HashMap<Point, Double>();
+		HashMap<Point2D, Double> distanceHash = new HashMap<Point2D, Double>();
 		//maintain all the distances from center to iterate through after
-		for (Point pt : pointList){
+		for (Point2D pt : pointList2){
 			distance = Math.sqrt(Math.pow(pt.getX() - center.getX(), 2) + Math.pow(pt.getY() - center.getY(), 2));
 			distanceHash.put(pt, distance);
 			
 		}
 		//iterate through distance to find radii and vertices
-		for (Map.Entry<Point, Double> entry : distanceHash.entrySet()){
+		for (Entry<Point2D, Double> entry : distanceHash.entrySet()){
 			if (entry.getValue() >= 0.9995 * radius) {	//percentage allows for fluctuation in precision
 				createVertexList.add(entry.getKey());
 			}
@@ -200,43 +201,30 @@ public class ImageRecognizer {
 	 * 	follow that side until it is a vertex
 	 */
 	public void intersect(){
-		double maxTheta = (3600 * (3601 / 2)) - (11 * (12 / 2)) / 10;
-		System.out.println("sum1: " + maxTheta);
-		Line2D.Double testLine = new Line2D.Double(0.0, 0.0, 10.0, 10.0);
-        //from: http://stackoverflow.com/questions/6339328/iterate-through-each-point-on-a-line-path-in-java
-		List<Point2D> ary = new ArrayList<Point2D>();
-        Line2D line = new Line2D.Double(0, 0, 10, 10);
-        Point2D current;
-//        for(Iterator<Point2D> iter = new LineIterator(line); iter.hasNext();) {
-//            current =iter.next();
-//            System.out.println(current);
-//            ary.add(current);
-//        }
-//		Line2D line = new Line2D.Double();
-		int maxRadius = (image.getWidth() > image.getHeight()) ? image.getWidth() : image.getHeight();
-		Polygon polygon = new Polygon();
-		Line2D currentSide = new Line2D.Double();
-		int sides = 0;
-		for (int point = 0; point < pointList.size(); point++){
+		int maxRadius = (image.getWidth() > image.getHeight()) ? image.getWidth() : image.getHeight();	//set radius equal to largest size
+		Line2D currentSide = new Line2D.Double();	//initialize side to compare inside of the iteration
+		int sides = 0;								//count the sides for testing
+		for (int point = 0; point < pointList.size(); point++){	//iterate through each point of the points collected along the border
 			//at max, use beginning point
 			if (point == pointList.size() - 1) interesectingRay(pointList.get(point), pointList.get(0), 0, maxRadius, 360, 360, 0); 
 			else currentSide = 	interesectingRay(pointList.get(point), pointList.get(point + 1), 0, maxRadius, 360, 360, 0);	
-			
+			//if currentSide from the recursion is not null then it found/returned an overlapping side
 			if (currentSide != null){
-				System.out.println("found: " + currentSide.getP1() + ", " + currentSide.getP2()); //print vertices for testing
-				Point pt1 = (Point) currentSide.getP1();
-				Point pt2 = (Point) currentSide.getP2();
-				if (pt1.equals(pointList.get(point))) {
-					point = pointList.indexOf(new Point((int) currentSide.getP2().getX(),(int) currentSide.getP2().getY())) - 1;
-				}
-				else {
-					point = pointList.indexOf(new Point((int) currentSide.getP1().getX(),(int) currentSide.getP1().getY())) - 1;
-				}
-				System.out.println(point);
-				point = (point > 0) ? point : pointList.size();
-				System.out.println(point);
-				currentSide = null;
+//				System.out.println("found: " + currentSide.getP1() + ", " + currentSide.getP2()); //print vertices for testing
+				Point2D pt1 = currentSide.getP1();
+				Point2D pt2 = currentSide.getP2();
 				//set point = to the end point to skip points in the middle
+				if (pt1.equals(pointList.get(point))) {	//point aligns in the proper direction
+					if (pointList.indexOf(new Point2D.Double(pt2.getX(), pt2.getY())) > point){
+						point = pointList.indexOf(new Point2D.Double(pt2.getX(), pt2.getY()));
+					}
+				}
+				else if (pt2.equals(pointList.get(point))){	//point misaligns in the proper direction
+					System.out.println("asdf");
+					point = pointList.size();
+				}
+				point = (point > 0) ? point : pointList.size();
+				currentSide = null;
 				sides++;
 			}
 		}
@@ -252,13 +240,12 @@ public class ImageRecognizer {
 	 * previousTheta is the angle out of 360 used in the ray transformation will be used to calculate the next angle
 	 * direction is whether to move counterclockwise (1) or clockwise (-1)
 	 */
-	public Line2D interesectingRay(Point startPt, Point refPoint, int intersections, int radius, double theta, double thetaDelta, int direction){
-//		System.out.println(startPt + " & theta: " + theta);
+	public Line2D interesectingRay(Point2D startPt, Point2D refPoint, int intersections, int radius, double theta, double thetaDelta, int direction){
 		//calculate theta
 		double previousTheta = theta;
 		thetaDelta /= 2;
 		//polygon is clockwise from last ray
-		if (direction == 0) { //start case with 360 theta
+		if (direction == 0) { 		//start case with 360 theta
 			theta -= thetaDelta;	//subtract half the last theta;
 		}
 		else if (direction == -1) {
@@ -272,13 +259,13 @@ public class ImageRecognizer {
 		//a base case, theta change is so small we will never achieve match so return
 		if (thetaDelta < 1) return null;
 		
+		//set values to use in test
 		Point2D endPoint = new Point2D.Double((startPt.getX() + (radius * Math.cos(Math.toRadians(theta)))),
-				(startPt.getY() + (radius * Math.sin(Math.toRadians(theta)))));
+				(startPt.getY() + (radius * Math.sin(Math.toRadians(theta)))));		//calculate endpoint from the angle of rotation
 		Line2D ray = new Line2D.Double((double) startPt.getX(), (double) startPt.getY(), endPoint.getX(), endPoint.getY());	//calculate and set new ray
+		Point2D point;						//use inside iterator
+		Line2D side = new Line2D.Double();	//hold the ray if it overlaps
 		
-//		direction = ray.relativeCCW(refPoint);	//reset the direction in case it recurses
-		Point2D point;
-		Line2D side = new Line2D.Double();
 		//reset instersections
 		intersections = 0;
 		//starting with the first point, track the side to the next vertex
@@ -287,22 +274,18 @@ public class ImageRecognizer {
 			point = iter.next();
 			//check whether the line is colored differently than the background (i.e. is the polygon)
 			if (point.getX() >= 0 && point.getY() >= 0 && point.getX() < image.getWidth() && point.getY() < image.getHeight()) {	//ensure within image
-				if (image.getRGB((int) point.getX(), (int) point.getY()) != bgRGB) {
-					intersections++;
-					side.setLine(startPt, point);
+				if (image.getRGB((int) point.getX(), (int) point.getY()) != bgRGB) {	//not background then polygon border
+					intersections++;				//increase intersection each time the color matches the polygon
+					side.setLine(startPt, point);	//increse the endpoint of the line
 				}
 			}
         }		
 		//base case return if it is on the path or 
-		if (intersections > 10){	//is a side
+		if (intersections > 10){	//is a side if multiple intersections - return the side
 			return side;
 		}
-		else {
-			return interesectingRay(startPt, refPoint, intersections, radius, theta, thetaDelta, ray.relativeCCW(refPoint));
+		else {	//is not a side, recurse.
+			return interesectingRay(startPt, refPoint, intersections, radius, theta, thetaDelta, ray.relativeCCW(refPoint));	//recurse with a new direction
 		}
-		//starts inside the polygon
-		
-//		vertices.add(new Point(center[0] + (int) (radius * Math.cos(Math.toRadians(theta))),
-//				center[1] + (int) (radius * Math.sin(Math.toRadians(theta)))));
 	}
 }
