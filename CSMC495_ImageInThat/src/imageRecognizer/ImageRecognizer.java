@@ -7,6 +7,7 @@ package imageRecognizer;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Polygon;
+import java.lang.management.GarbageCollectorMXBean;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -50,7 +51,7 @@ public class ImageRecognizer {
 		map();							//get all the potential vertices and place into pointList
 		radius = createRadius(center, pointList);
 		vertexList = createVertices(pointList);	//get all vertices from center 
-		testArea();
+//		testArea();
 		intersect();
 	}	
 	//return number of sides mapped by IR
@@ -206,27 +207,33 @@ public class ImageRecognizer {
 		List<Point2D> ary = new ArrayList<Point2D>();
         Line2D line = new Line2D.Double(0, 0, 10, 10);
         Point2D current;
-        for(Iterator<Point2D> iter = new LineIterator(line); iter.hasNext();) {
-            current =iter.next();
-            System.out.println(current);
-            ary.add(current);
-        }
+//        for(Iterator<Point2D> iter = new LineIterator(line); iter.hasNext();) {
+//            current =iter.next();
+//            System.out.println(current);
+//            ary.add(current);
+//        }
 //		Line2D line = new Line2D.Double();
 		int[] xPoints = new int[pointList.size()];
 		int[] yPoints = new int[pointList.size()];
 		int maxRadius = (image.getWidth() > image.getHeight()) ? image.getWidth() : image.getHeight();
 		Polygon polygon = new Polygon();
 		Line2D currentSide = new Line2D.Double();
+		int sides = 0;
 		for (int point = 0; point < pointList.size(); point++){
-			polygon.addPoint((int) pointList.get(point).getX(), (int) pointList.get(point).getY());
-			currentSide = interesectingRay(pointList.get(point), pointList.get(point + 1), 0, maxRadius, 360.0, 0);
+			//at max, use beginning point
+			if (point == pointList.size() - 1) interesectingRay(pointList.get(point), pointList.get(0), 0, maxRadius, 360, 360, 0); 
+			else currentSide = 	interesectingRay(pointList.get(point), pointList.get(point + 1), 0, maxRadius, 360, 360, 0);	
+			
 			if (currentSide != null){
-				System.out.println(currentSide.getP1() + ", " + currentSide.getP2()); //print vertices for testing
+				System.out.println("found: " + currentSide.getP1() + ", " + currentSide.getP2()); //print vertices for testing
+				point = pointList.indexOf(new Point((int) currentSide.getP2().getX(),(int) currentSide.getP2().getY())) - 1;
+				point = (point > 1) ? point : pointList.size() - 1;
 				currentSide = null;
+				//set point = to the end point to skip points in the middle
+				sides++;
 			}
-			xPoints[point] = (int) pointList.get(point).getX();
-			yPoints[point] = (int) pointList.get(point).getY();
 		}
+		System.out.println(sides);
 	}
 	/*
 	 * intersectiongRay recursively moves a line from a starting point on the polygon to see if that line will overlap the side of the
@@ -238,48 +245,57 @@ public class ImageRecognizer {
 	 * previousTheta is the angle out of 360 used in the ray transformation will be used to calculate the next angle
 	 * direction is whether to move counterclockwise (1) or clockwise (-1)
 	 */
-	public Line2D interesectingRay(Point startPt, Point refPoint, int intersections, int radius, double previousTheta, int direction){
-		double theta = 0.0;
+	public Line2D interesectingRay(Point startPt, Point refPoint, int intersections, int radius, double theta, double thetaDelta, int direction){
+//		System.out.println(startPt + " & theta: " + theta);
 		//calculate theta
+		double previousTheta = theta;
+		thetaDelta /= 2;
 		//polygon is clockwise from last ray
-		if (direction == 1) {
-			theta = previousTheta * 1.5;	//add half the last theta
+		if (direction == 0) { //start case with 360 theta
+			theta -= thetaDelta;	//subtract half the last theta;
+		}
+		else if (direction == -1) {
+			theta += thetaDelta;	//add half the last theta
 		}
 		//polygon is counterclockwise from last ray
-		else if (direction == -1){
-			theta = previousTheta * 0.5;	//subtract half the last theta;
-		}
-		//we should not receive an else because that means the last ray should have overlapped the line and not thrown a direction number or recursed
+		else {
+			theta -= thetaDelta;	//subtract half the last theta;
+		} //we should not receive an else because that means the last ray should have overlapped the line and not thrown a direction number or recursed
 		
 		//a base case, theta change is so small we will never achieve match so return
-		if (Math.abs(previousTheta - theta) < 0.01) return null;
+		if (thetaDelta < 0.1) return null;
 		
 		Point2D endPoint = new Point2D.Double((startPt.getX() + (radius * Math.cos(Math.toRadians(theta)))),
 				(startPt.getY() + (radius * Math.sin(Math.toRadians(theta)))));
-		Line2D ray = new Line2D.Double((double) startPt.getX(), (double) startPt.getY(), endPoint.getX(), endPoint.getY());
+		Line2D ray = new Line2D.Double((double) startPt.getX(), (double) startPt.getY(), endPoint.getX(), endPoint.getY());	//calculate and set new ray
+		
+//		direction = ray.relativeCCW(refPoint);	//reset the direction in case it recurses
 		Point2D point;
 		Line2D side = new Line2D.Double();
 		//reset instersections
 		intersections = 0;
 		//starting with the first point, track the side to the next vertex
 		for(Iterator<Point2D> iter = new LineIterator(ray); iter.hasNext();) {
+			//get the next point on the Bresenham's line
 			point = iter.next();
-			if (image.getRGB((int) point.getX(), (int) point.getY()) != bgRGB) {
-				intersections += 1;
-				side.setLine(startPt, point);
+			//check whether the line is colored differently than the background (i.e. is the polygon)
+			if (point.getX() >= 0 && point.getY() >= 0 && point.getX() < image.getWidth() && point.getY() < image.getHeight()) {	//ensure within image
+				if (image.getRGB((int) point.getX(), (int) point.getY()) != bgRGB) {
+					intersections++;
+					side.setLine(startPt, point);
+				}
 			}
         }		
 		//base case return if it is on the path or 
-		if (intersections > 1){	//is a side
+		if (intersections > 20){	//is a side
 			return side;
 		}
-		else if (intersections == 1) {
-			ray.relativeCCW(refPoint);
+		else {
+			return interesectingRay(startPt, refPoint, intersections, radius, theta, thetaDelta, ray.relativeCCW(refPoint));
 		}
 		//starts inside the polygon
 		
 //		vertices.add(new Point(center[0] + (int) (radius * Math.cos(Math.toRadians(theta))),
 //				center[1] + (int) (radius * Math.sin(Math.toRadians(theta)))));
-		return ray;
 	}
 }

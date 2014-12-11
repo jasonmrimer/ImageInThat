@@ -188,7 +188,6 @@ public class ImageGenerator {
 			int xPoints[] = new int[sideNumber];
 			int yPoints[] = new int[sideNumber];
 			int center[] = {(width / 2), (height / 2)};
-//			System.out.println("true center: " + center[0] + "," + center[1]);
 			double theta = 1;
 			//plot the points as if on a circle using the radius from the center of the image 
 			for (int index = 0; index < sideNumber; index++){
@@ -263,9 +262,6 @@ public class ImageGenerator {
 			            );
 			    }
 			}
-			
-			// areaSegments now contains all the line segments
-			System.out.println("IG segs: " + areaSegments.size());
 		}
 	}
 }

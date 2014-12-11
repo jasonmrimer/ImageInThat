@@ -29,19 +29,23 @@ public class Main { //extends JPanel {
 
 		
 		//Jason's side
-		//frame
+//		//frame
 //		JFrame frame = new JFrame();
 //		ImageGenerator ig = new ImageGenerator(800, 800, 5, 5);
 //		frame.getContentPane().add(ig.getIGPanel());
 //		frame.setSize(800, 800);
 //		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //		frame.setVisible(true);
+//		ImageRecognizer ir = new ImageRecognizer(ig.getImage());
 		//test side values and accuracy
-		for (int sides = 3; sides < 7; sides++){
+		for (int sides = 7; sides < 8; sides++){
 			ImageGenerator ig = new ImageGenerator(800, 800, sides, sides);
 			ImageRecognizer ir = new ImageRecognizer(ig.getImage());
 			System.out.println("Sides created in IG:	" + ig.getIGShape().getNumberOfSides());
 			System.out.println("Sides mapped in IR:	" + ir.getNumberOfSidesMapped());
+//			for (Point pt : ig.getIGShape().getVertices()){
+//				System.out.println(pt);
+//			}
 		}
 		System.exit(0);
 	}
