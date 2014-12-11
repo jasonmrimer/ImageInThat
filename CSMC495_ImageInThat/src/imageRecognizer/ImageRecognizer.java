@@ -214,22 +214,68 @@ public class ImageRecognizer {
 //		Line2D line = new Line2D.Double();
 		int[] xPoints = new int[pointList.size()];
 		int[] yPoints = new int[pointList.size()];
+		int maxRadius = (image.getWidth() > image.getHeight()) ? image.getWidth() : image.getHeight();
 		Polygon polygon = new Polygon();
+		Line2D currentSide = new Line2D.Double();
 		for (int point = 0; point < pointList.size(); point++){
 			polygon.addPoint((int) pointList.get(point).getX(), (int) pointList.get(point).getY());
-
+			currentSide = interesectingRay(pointList.get(point), pointList.get(point + 1), 0, maxRadius, 360.0, 0);
+			if (currentSide != null){
+				System.out.println(currentSide.getP1() + ", " + currentSide.getP2()); //print vertices for testing
+				currentSide = null;
+			}
 			xPoints[point] = (int) pointList.get(point).getX();
 			yPoints[point] = (int) pointList.get(point).getY();
 		}
-		
-		
-		
 	}
-	public Line2D interesectingRay(Point startPt, int intersections, int radius, double previousTheta, double thetaSum, double maxTheta){
-		Line2D ray = new Line2D.Double();
+	/*
+	 * intersectiongRay recursively moves a line from a starting point on the polygon to see if that line will overlap the side of the
+	 * polygon - if so, the line is a side and its end points are vertices 
+	 * startPoint is the point to test whether it is a vertex 
+	 * refPoint is the next counter-clockwise point used to determine the next angular rotation
+	 * intersections is the number of intersections used to determine whether inside polygon, outside polygon, or on polygon
+	 * radius is the length that will assure coverage of the entire image (greater of width/Height)
+	 * previousTheta is the angle out of 360 used in the ray transformation will be used to calculate the next angle
+	 * direction is whether to move counterclockwise (1) or clockwise (-1)
+	 */
+	public Line2D interesectingRay(Point startPt, Point refPoint, int intersections, int radius, double previousTheta, int direction){
+		double theta = 0.0;
+		//calculate theta
+		//polygon is clockwise from last ray
+		if (direction == 1) {
+			theta = previousTheta * 1.5;	//add half the last theta
+		}
+		//polygon is counterclockwise from last ray
+		else if (direction == -1){
+			theta = previousTheta * 0.5;	//subtract half the last theta;
+		}
+		//we should not receive an else because that means the last ray should have overlapped the line and not thrown a direction number or recursed
 		
+		//a base case, theta change is so small we will never achieve match so return
+		if (Math.abs(previousTheta - theta) < 0.01) return null;
+		
+		Point2D endPoint = new Point2D.Double((startPt.getX() + (radius * Math.cos(Math.toRadians(theta)))),
+				(startPt.getY() + (radius * Math.sin(Math.toRadians(theta)))));
+		Line2D ray = new Line2D.Double((double) startPt.getX(), (double) startPt.getY(), endPoint.getX(), endPoint.getY());
+		Point2D point;
+		Line2D side = new Line2D.Double();
+		//reset instersections
+		intersections = 0;
+		//starting with the first point, track the side to the next vertex
+		for(Iterator<Point2D> iter = new LineIterator(ray); iter.hasNext();) {
+			point = iter.next();
+			if (image.getRGB((int) point.getX(), (int) point.getY()) != bgRGB) {
+				intersections += 1;
+				side.setLine(startPt, point);
+			}
+        }		
 		//base case return if it is on the path or 
-		
+		if (intersections > 1){	//is a side
+			return side;
+		}
+		else if (intersections == 1) {
+			ray.relativeCCW(refPoint);
+		}
 		//starts inside the polygon
 		
 //		vertices.add(new Point(center[0] + (int) (radius * Math.cos(Math.toRadians(theta))),
