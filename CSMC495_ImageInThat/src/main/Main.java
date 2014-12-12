@@ -38,7 +38,7 @@ public class Main { //extends JPanel {
 //		frame.setVisible(true);
 //		ImageRecognizer ir = new ImageRecognizer(ig.getImage());
 		//test side values and accuracy
-		for (int sides = 4; sides < 5; sides++){
+		for (int sides = 3; sides < 10; sides++){
 			ImageGenerator ig = new ImageGenerator(800, 800, sides, sides);
 			ImageRecognizer ir = new ImageRecognizer(ig.getImage());
 			System.out.println("Sides created in IG:	" + ig.getIGShape().getNumberOfSides());

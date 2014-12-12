@@ -53,7 +53,8 @@ public class ImageRecognizer {
 		radius = createRadius(center, pointList);
 		vertexList = createVertices(pointList);	//get all vertices from center 
 //		testArea();
-		intersect();
+//		intersect();
+//		tangent();
 	}	
 	//return number of sides mapped by IR
 	public int getNumberOfSidesMapped(){
@@ -200,6 +201,16 @@ public class ImageRecognizer {
 	 * If it intersect 2+ times then it overlaps a side
 	 * 	follow that side until it is a vertex
 	 */
+	public void tangent(){
+		int maxRadius = (image.getWidth() > image.getHeight()) ? image.getWidth() : image.getHeight();	//set radius equal to largest size
+		Point2D tempPt;
+		for (Point2D pt : pointList){
+			tempPt = tangentLine(pt, maxRadius);
+			if (tempPt != null){
+				vertexList.add(tempPt);
+			}
+		}
+	}
 	public void intersect(){
 		int maxRadius = (image.getWidth() > image.getHeight()) ? image.getWidth() : image.getHeight();	//set radius equal to largest size
 		Line2D currentSide = new Line2D.Double();	//initialize side to compare inside of the iteration
@@ -287,5 +298,39 @@ public class ImageRecognizer {
 		else {	//is not a side, recurse.
 			return interesectingRay(startPt, refPoint, intersections, radius, theta, thetaDelta, ray.relativeCCW(refPoint));	//recurse with a new direction
 		}
+	}
+	public Point2D tangentLine(Point2D centerPt, int radius) { //, Point2D refPoint, int intersections, int radius, double theta, double thetaDelta, int direction){
+		Point2D vertex = null; 
+		for (double theta = 0.0; theta < 360.0; theta += 1){
+			//set values to use in test
+			Point2D startPt = new Point2D.Double((centerPt.getX() + (radius * Math.cos(Math.toRadians(theta)))),
+					(centerPt.getY() + (radius * Math.sin(Math.toRadians(theta)))));		//calculate endpoint from the angle of rotation
+			Point2D endPt = new Point2D.Double((centerPt.getX() + (radius * Math.cos(Math.toRadians(theta - 180.0)))),
+					(centerPt.getY() + (radius * Math.sin(Math.toRadians(theta - 180.0)))));		//calculate endpoint from the angle of rotation
+			Line2D ray = new Line2D.Double(startPt.getX(), startPt.getY(), endPt.getX(), endPt.getY());	//calculate and set new ray
+//			System.out.println(startPt + " | " + endPt);
+			Point2D point;
+			
+			//reset instersections
+			int intersections = 0;
+			//starting with the first point, track the side to the next vertex
+			for(Iterator<Point2D> iter = new LineIterator(ray); iter.hasNext();) {
+				//get the next point on the Bresenham's line
+				point = iter.next();
+				//check whether the line is colored differently than the background (i.e. is the polygon)
+				if (point.getX() >= 0 && point.getY() >= 0 && point.getX() < image.getWidth() && point.getY() < image.getHeight()) {	//ensure within image
+					if (image.getRGB((int) point.getX(), (int) point.getY()) != bgRGB) {	//not background then polygon border
+						vertex = new Point2D.Double(point.getX(), point.getY());
+						intersections++;				//increase intersection each time the color matches the polygon
+					}
+				}
+	        }	
+			//base case return if it is on the path or 
+			if (intersections == 1){	//is a vertex if multiple intersections - return the side
+				return vertex;
+			}
+			else vertex = null;
+		}
+		return vertex;
 	}
 }
