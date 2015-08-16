@@ -1,4 +1,4 @@
-CSMC495_ImageInThat
+ImageInThat
 ===================
 
-CMSC495 Trends in Computer Science. This class project will create and recognize basic shapes in an image.
+This project attempts to create basic geometric shapes then recognize those basic shapes from an image. It attempts several different methods to varying degrees of success.
